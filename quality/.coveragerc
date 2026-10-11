@@ -1,0 +1,10 @@
+[run]
+branch        = False
+cover_pylib   = False
+concurrency   = thread
+data_file     = ./.coverage
+debug         =
+source        = ../src
+timid         = False
+
+

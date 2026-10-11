@@ -1,0 +1,65 @@
+# Documentation de poetry: https://python-poetry.org/docs/pyproject/
+
+[tool.poetry]
+name = "eoqual-measure"
+version = "0.1.0"
+description = "Controlled physical image quality measurements for Earth observation imaging systems"
+authors = ["Olivier Amram <olivier.amram@free.fr>"]
+maintainers = [
+    "Olivier Amram <olivier.amram@free.fr>"
+]
+repository = "https://github.com/EOQual/eoqual-measure.git"
+readme = "README.md"
+license = "MIT"
+keywords = ["mtf", "slanted-edge", "noise", "image-quality", "earth-observation"]
+packages = [{include = "eoqual/measure", from = "src"}]
+exclude = [
+    "**/__pycache__",
+    "**/.DS_Store",
+]
+
+[tool.poetry.scripts]
+# Nécessite l'extra "plot" (tracés HTML ; --no-plot pour le texte seul).
+eoqual-measure-mtf = "eoqual.measure.mtf.slanted_edge.cli:main"
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4.0"
+# Briques numériques communes (edge, bayer, detrend, tiling), épinglées
+# sur une version : voir les règles de stabilité d'eoqual-core.
+eoqual-core = {git = "https://github.com/EOQual/eoqual-core.git", tag = "v0.1.0"}
+numpy = "*"
+scipy = "*"
+# opencv-python : uniquement cv2.Sobel (canonicalisation et détecteur PCA
+# du bord incliné).
+opencv-python = "*"
+# scikit-image : estimate_sigma et SLIC (mesure de bruit).
+scikit-image = "*"
+pywavelets = "*"
+imageio = "*"
+rich = "*"
+
+# --- Extra "plot" : visualisations HTML interactives et CLI MTF ---
+plotly = {version = "*", optional = true}
+# --- Extra "study" : études de sensibilité (tableaux de résultats) ---
+pandas = {version = "*", optional = true}
+
+[tool.poetry.extras]
+plot = ["plotly"]
+study = ["plotly", "pandas"]
+
+[tool.poetry.group.docs.dependencies]
+sphinx = "*"
+sphinx-rtd-theme = "*"
+sphinx-autoapi = "*"
+
+[tool.poetry.group.dev.dependencies]
+poetry = "^2.1.1"
+ipython = "^8.8.0"
+black = "^23.3.0"
+coverage = "^6.5.0"
+pylint = "*"
+pytest = "<9"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

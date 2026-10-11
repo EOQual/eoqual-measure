@@ -1,0 +1,152 @@
+# https://github.com/github/gitignore/blob/main/Python.gitignore
+
+# Compiled source #
+###################
+__pycache__/
+*.com
+*.class 
+# *$py.class
+*.dll
+*.exe
+*.o
+*.so
+*.py[cod]
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+#lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*,cover
+.hypothesis/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+local_settings.py
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/build/
+!docs/build/.gitkeep
+# RST régénérés à chaque build par sphinx-autoapi (autoapi_dirs dans conf.py)
+docs/source/autoapi/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# dotenv
+.env
+
+# virtualenv
+.venv
+venv/
+ENV/
+quality/__env__/
+
+# Spyder project settings
+.spyderproject
+
+# Rope project settings
+.ropeproject
+
+# Pycharm
+.idea
+
+# Poetry
+poetry.lock
+
+# vscode
+.vscode/
+
+# Cookiecutter folders #
+########################
+/__A_TRIER__/
+/data/
+/figures/
+/output/
+__OAM__
+__OLD__
+
+# Artefacts générés par les scripts de examples/ (ex. all_metrics_overview.py)
+outputMetrics.csv

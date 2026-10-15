@@ -1572,22 +1572,31 @@ réalisation de bruit locale. Choisir les patchs au gradient le plus faible
 revient alors, indirectement, à choisir les réalisations de bruit les plus
 "calmes", ce qui sous-estime la variance.
 
-Vérifié empiriquement (bruit blanc gaussien de variance connue = 25) :
+Vérifié empiriquement : bruit blanc gaussien de variance connue = 25, image
+512 × 512, moyenne de 5 tirages (`seed` 0 à 4), paramètres par défaut. Scène
+mixte : damier de pavés de 64 px alternativement plats (120 DN) et texturés ;
+texture : bruit blanc gaussien lissé (`gaussian_filter`, σ = 1 px) ramené à un
+écart-type de 30 DN autour de 120 DN (`default_rng(3)`).
 
-| Scène | `flat_patches` | `pca_estimate` | `ponomarenko` | `wavelets` |
-|---|---|---|---|---|
-| 100 % plate (aucune texture réelle nulle part) | 17.8 (−29 %) | 16.9 (−32 %, avec calibration) | 24.7 (−1 %) | 24.9 (−0 %) |
-| Damier zones plates / zones texturées (cas réaliste) | 18.9 (−24 %) | 19.8 (−21 %, avec calibration) | 25.1 (0 %) | 89.0 (+256 %) |
+| Scène | `flat_patches` | `pca_estimate` | `ponomarenko` | `wavelets` | `skimage_estimate_sigma` | `adaptive_segmentation` |
+|---|---|---|---|---|---|---|
+| 100 % plate (aucune texture réelle nulle part) | 17.9 (−29 %) | 17.0 (−32 %, avec calibration) | 25.1 (0 %) | 25.0 (0 %) | 24.9 (−1 %) | 23.8 (−5 %) |
+| Damier zones plates / zones texturées (cas réaliste) | 19.0 (−24 %) | 20.0 (−20 %, avec calibration) | 24.5 (−2 %) | 41.2 (+65 %) | 33.6 (+34 %) | 144.0 (+476 %) |
+| 100 % texturée | 334.6 (+1238 %) | 31.4 (+25 %) | 32.1 (+29 %) | 73.7 (+195 %) | 45.1 (+80 %) | 829.9 (+3219 %) |
 
-Dans le second cas — plus proche d'une scène réelle où existent de vraies
+Dans le deuxième cas — plus proche d'une scène réelle où existent de vraies
 zones homogènes et de vraies zones texturées — le biais des méthodes par
-patchs reste significatif (~-25 %) mais les méthodes globales par ondelettes
-(`wavelets`, `skimage_estimate_sigma`) deviennent au contraire très
-mauvaises : leur hypothèse implicite (les coefficients de détail sont
+patchs reste significatif (~-20 à -25 %) mais les méthodes globales par
+ondelettes (`wavelets`, `skimage_estimate_sigma`) surestiment au contraire
+nettement : leur hypothèse implicite (les coefficients de détail sont
 majoritairement du bruit) s'effondre dès qu'une fraction significative de
-l'image est texturée. `ponomarenko`, grâce à la séparation fréquentielle
-DCT basses/hautes fréquences par bloc, reste le plus robuste dans les deux
-cas sur ce test.
+l'image est texturée, d'autant plus que la texture est forte et fine.
+`adaptive_segmentation` est la plus fragile dès que la scène est texturée.
+`ponomarenko`, grâce à la séparation fréquentielle DCT basses/hautes
+fréquences par bloc, reste le plus robuste dans les deux premiers cas. Sur
+une scène **entièrement** texturée, aucune méthode n'est fiable (au mieux
++25 %) : il faut des zones réellement homogènes quelque part dans l'image
+(ou dans une autre image du même capteur).
 
 **Implication pratique** :
 
@@ -1745,15 +1754,25 @@ résiduelle chute).
 
 `--bit_depth 8` (ou 16) sur `examples/noise_intercomparison.py` reproduit directement ce phénomène en
 quantifiant et écrêtant l'image bruitée générée sur `[0, 2^bit_depth - 1]`,
-comme un capteur réel (mode validation synthétique uniquement). Exemple
-observé sur une image synthétique à large gamme de luminance (a=0.3, b=5
-injectés, capteur 8 bits) :
+comme un capteur réel (mode validation synthétique uniquement). L'image propre
+par défaut du script (`generate_clean_image`, 85 à 180 DN) n'atteint pas la
+saturation : pour l'observer, il faut une scène couvrant toute la dynamique.
+Exemple : rampe horizontale de 5 à 255 DN (512 × 512, plus une ondulation
+verticale de 3 DN), a=0.3, b=5 injectés, capteur 8 bits, `ponomarenko` avec
+`num_bins=12`, moyenne de 5 tirages :
+
+```python
+yy, xx = np.indices((512, 512))
+rampe = (5 + 250 * xx / 511 + 3 * np.sin(yy / 40)).astype(np.float32)
+est = estimate_noise(add_noise(rampe, a=0.3, b=5.0, seed=0, bit_depth=8),
+                     "ponomarenko", num_bins=12)
+```
 
 | Luminance | Variance mesurée | Modèle linéaire attendu |
 |---|---|---|
-| ~200 | 64.1 | ~65 (cohérent) |
-| ~221 | 66.6 | ~71 (déjà en retrait) |
-| ~250 (proche saturation) | **34.4** | ~80 (écart net — écrêtage) |
+| ~201 | 64.3 | 65.3 (cohérent) |
+| ~222 | 67.0 | 71.6 (déjà en retrait) |
+| ~252 (proche saturation) | **25.5** | 80.5 (écart net — écrêtage) |
 
 **Deux mécanismes pour en tenir compte**, disponibles dans `examples/noise_intercomparison.py` :
 
@@ -1762,9 +1781,10 @@ injectés, capteur 8 bits) :
    affine, tout en les affichant sur le graphique (marqueurs gris distincts)
    pour visualiser l'écart. La droite ajustée reflète alors la plage "bien
    comportée" du capteur, sans être tirée par les artefacts de saturation.
-   Sur l'exemple ci-dessus, `--trim_low_pct 15 --trim_high_pct 15` retrouve
-   a=0.318 (vs 0.3 injecté) et b=3.48 (vs 5) là où un ajustement sur tous
-   les bins aurait été faussé par les points saturés.
+   Sur l'exemple ci-dessus, un ajustement sur les 12 bins donne a=0.19 et
+   b=13.9 (faussé par le bin saturé) ; en excluant le premier et le dernier
+   bin, a=0.28 et b=6.5 ; les deux premiers et les deux derniers, a=0.29 et
+   b=5.8 (vs 0.3 et 5 injectés).
 2. **`--fit_degree N`** (N=2 quadratique, N=3 cubique, etc.) : ajoute une
    régression polynomiale de degré N (calculée sur tous les bins, y compris
    les extrêmes) superposée à la droite affine, pour visualiser explicitement

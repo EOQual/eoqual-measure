@@ -2,9 +2,42 @@
 
 ## Version History
 
-Non publié
+0.2.0 (2026-10-27)
 
-:   -   Intégration continue des tests (`.github/workflows/tests.yml`).
+:   -   **Projet signalé en cours de développement** (README, docstring
+        du paquet) : mesures validées sur simulation, pas encore
+        qualifiées sur données réelles.
+    -   **Mesures radiométriques** (`eoqual.measure.radiometry`) :
+        `measure_dark_frame`, `measure_dark_current`,
+        `measure_temporal_noise`, `measure_ptc` (courbe de transfert
+        photonique), `measure_prnu`, `measure_linearity`,
+        `map_defective_pixels`, `find_rts_pixels`, `adc_histogram`,
+        `measure_pushbroom_noise`, `snr_at_levels`,
+        `measure_spatial_noise` (pile, push broom, whisk broom),
+        `measure_equalization_noise`, `decompose_spatial`.
+    -   **Spectres de bruit** (`eoqual.measure.noise`) :
+        `noise_power_spectrum`, `find_structured_noise`.
+    -   **Contraste sur bruit** (`eoqual.measure.contrast`) :
+        `measure_cnr`.
+    -   **Simulateur de capteur** (`eoqual.measure.synthetic`) :
+        `MatrixSensor`, `PushbroomSensor` (TDI), `WhiskbroomSensor`,
+        `natural_scene`, `PeriodicPattern`, `apply_kernel` ; bruits de
+        photons, de lecture et d'obscurité, DSNU/PRNU, courant
+        d'obscurité et température, pixels chauds, morts, bloqués et
+        télégraphiques, non-linéarité, transmission optique, bruits
+        structurés, rayons cosmiques, convertisseur à pas inégaux.
+    -   Registre `config.py` : 16 mesures ajoutées ou rendues
+        disponibles ; la PTC s'appuie sur `temporal_noise` et
+        `dark_frame`.
+    -   `REFERENCE_TECHNIQUE.md` : parties IV (mesures radiométriques) et
+        V (simulateur) ; lien du sommaire de la partie I corrigé.
+    -   `examples/` : études de domaine de validité
+        (`pushbroom_texture_bias_study.py`,
+        `structured_noise_detection_study.py`) et plan de tests sur
+        données réelles.
+    -   169 tests ajoutés (validation contre la vérité du simulateur,
+        robustes sur 30 graines via `EOQUAL_TEST_SEED`).
+    -   Intégration continue des tests (`.github/workflows/tests.yml`).
     -   `license.txt` : titulaire des droits (Olivier Amram) au lieu du
         nom du module.
 

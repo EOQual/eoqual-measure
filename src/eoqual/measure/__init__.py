@@ -1,8 +1,15 @@
 """
 eoqual.measure — Mesures physiques contrôlées de la qualité image d'un
 système d'observation de la Terre : FTM sur bord incliné, variance du
-bruit, Strehl et énergie encerclée, et à terme courbe de transfert
-photonique, bruit d'égalisation, contraste sur bruit sur mire.
+bruit, Strehl et énergie encerclée, et mesures radiométriques
+(obscurité, courant d'obscurité, bruit temporel, courbe de transfert
+photonique, PRNU, linéarité, pixels défectueux et télégraphiques,
+convertisseur, bruit d'un push broom, bruit spatial et d'égalisation,
+spectre du bruit et bruits structurés, contraste sur bruit sur mire).
+
+**En cours de développement** : les mesures radiométriques sont validées
+sur données simulées mais pas encore qualifiées sur données réelles ;
+l'API peut évoluer et des anomalies sont possibles.
 
 Public API
 ----------
@@ -11,11 +18,17 @@ Public API
 >>> mtf = measure_mtf(edge_zone)                # MTFResult
 >>> noise = estimate_noise(image, "ponomarenko", num_bins=8)
 >>> psf = measure_psf(star, sampling=4.0)       # Strehl, énergie encerclée
+>>> from eoqual.measure.radiometry import measure_dark_frame, measure_ptc
+>>> dark = measure_dark_frame(dark_stack)        # offset, DSNU, b
+>>> ptc = measure_ptc(flat_pairs, dark)          # gain K, bruit de lecture
 
 Les API détaillées vivent dans les sous-paquets :
 :mod:`eoqual.measure.mtf.slanted_edge` (comparateurs, estimateurs,
 bootstrap, aberration chromatique), :mod:`eoqual.measure.noise`,
-:mod:`eoqual.measure.synthetic` (mires à vérité terrain connue). Les
+:mod:`eoqual.measure.radiometry` (mesures radiométriques),
+:mod:`eoqual.measure.contrast` (contraste sur bruit),
+:mod:`eoqual.measure.synthetic` (mires et capteurs simulés à vérité
+terrain connue). Les
 briques numériques partagées avec les autres modules EOQual viennent
 d'``eoqual-core``.
 
@@ -25,7 +38,7 @@ calcule des indicateurs de qualité, dont certains sans référence sur
 scène quelconque (ex. MTF@Nyquist sur arêtes naturelles).
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __title__ = "eoqual.measure"
 __description__ = "Controlled physical image quality measurements for Earth observation imaging systems"
 __url__ = "https://github.com/EOQual/eoqual-measure"

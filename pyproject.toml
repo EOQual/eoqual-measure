@@ -2,7 +2,7 @@
 
 [tool.poetry]
 name = "eoqual-measure"
-version = "0.1.0"
+version = "0.2.0"
 description = "Controlled physical image quality measurements for Earth observation imaging systems"
 authors = ["Olivier Amram <olivier.amram@free.fr>"]
 maintainers = [
@@ -11,7 +11,7 @@ maintainers = [
 repository = "https://github.com/EOQual/eoqual-measure.git"
 readme = "README.md"
 license = "MIT"
-keywords = ["mtf", "slanted-edge", "noise", "image-quality", "earth-observation"]
+keywords = ["mtf", "slanted-edge", "noise", "radiometry", "photon-transfer-curve", "prnu", "image-quality", "earth-observation"]
 packages = [{include = "eoqual/measure", from = "src"}]
 exclude = [
     "**/__pycache__",

@@ -45,4 +45,9 @@ publiées ; leurs références figurent dans `REFERENCE_TECHNIQUE.md`.
 | `noise/variance.py` — `ponomarenko` | DCT par blocs, sélection basse fréquence, classes de luminance | Ponomarenko et al. (2007) ; Colom & Buades (2013) | 🟢 |
 | `noise/variance.py` — autres | Ondelettes, patchs plats, superpixels SLIC, PCA de patchs | Donoho & Johnstone (1994) ; Achanta et al. (2012) ; Pyatykh et al. (2013) ; Chen et al. (2015) | 🟢 |
 | `psf/`, `synthetic/psf.py` | Strehl, énergie encerclée, PSF de Fraunhofer aberrée | Mahajan (1982) ; Noll (1976) ; Born & Wolf | 🟢 |
+| `radiometry/` | Obscurité, PTC, courant d'obscurité, PRNU, linéarité, défauts, RTS (EM, BIC, Viterbi), histogramme du convertisseur, bruit d'un push broom (filtre de différence), bruit spatial et d'égalisation, SNR | EMVA 1288 ; Janesick (2001, 2007) ; IEEE Std 1241 ; Immerkær (1996) ; Bartlett (1946) ; Taylor (1997) | 🟢 |
+| `noise/spectrum.py` | NPS de Welch, détection de raies (seuils Gamma), bruit de ligne | Welch (1967) ; ISO 15739 ; Moisan (2011), via `eoqual.core.fourier.perdecomp` | 🟢 |
+| `contrast/` | Contraste sur bruit, seuil d'Otsu | Otsu (1979) | 🟢 |
+| `synthetic/` — simulateur de capteur (`sensor`, `patterns`, `scene`, `dark`, `response`, `temporal_effects`, `processing`) | Modèle de pixel EMVA, synthèse spectrale 1/f^β, scènes fBm, courant d'obscurité, non-linéarité, RTS, convertisseur à pas inégaux | EMVA 1288 ; Downey, *Think DSP* (CC-BY 4.0, idée de la synthèse spectrale, aucun code repris) ; guide CCD d'Astropy (BSD-3, modèle d'image artificielle, aucun code repris) | 🟢 |
+| `resources/modele_pixel_emva.{svg,png}` | Schéma du modèle de pixel | Redessiné par l'auteur d'après EMVA 1288 et une figure de K. Douglass (« Modeling noise for image simulations ») ; aucune image reprise | 🟢 |
 | `config.py`, `runner.py`, `noise/estimate.py`, `mtf/__init__.py`, tests | — | — | 🟢 |

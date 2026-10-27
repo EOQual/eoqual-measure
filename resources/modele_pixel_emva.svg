@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 660" width="1280" height="660" font-family="Helvetica, Arial, sans-serif">
+  <title>Modèle linéaire d'un pixel (EMVA 1288)</title>
+  <desc>Photons (μp, σp²) multipliés par le rendement quantique η donnent des électrons (μe, σe²) ;
+  le bruit d'obscurité (μd, σd²) s'y ajoute ; le gain système K_E convertit en signal, le
+  convertisseur ajoute le bruit de quantification σq² ; sortie μy, σy² en DN.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerUnits="userSpaceOnUse" markerWidth="24" markerHeight="24" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#000"/>
+    </marker>
+    <style>
+      .lbl { font-size: 34px; fill: #000; }
+      .math { font-size: 36px; font-style: italic; fill: #000; }
+      .sub { font-size: 24px; }
+      .unit { font-size: 26px; fill: #333; }
+      .line { stroke: #000; stroke-width: 5; fill: none; }
+      .node { fill: #e8e8e8; stroke: #000; stroke-width: 2.5; }
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1280" height="660" fill="#ffffff"/>
+  <!-- capteur -->
+  <rect x="248" y="30" width="822" height="480" fill="#b3c7e6"/>
+
+  <!-- étiquettes des bruits -->
+  <text class="lbl" x="122" y="72" text-anchor="middle">Bruit de</text>
+  <text class="lbl" x="122" y="112" text-anchor="middle">photons</text>
+  <text class="lbl" x="540" y="72" text-anchor="middle">Bruit d'obscurité</text>
+  <text class="unit" x="540" y="108" text-anchor="middle">(lecture + courant d'obscurité)</text>
+  <text class="lbl" x="950" y="72" text-anchor="middle">Bruit de</text>
+  <text class="lbl" x="950" y="112" text-anchor="middle">quantification</text>
+
+  <!-- grandeurs entrantes -->
+  <text class="math" x="540" y="200" text-anchor="middle">μ<tspan class="sub" baseline-shift="sub">d</tspan>, σ<tspan class="sub" baseline-shift="sub">d</tspan><tspan class="sub" baseline-shift="super">2</tspan></text>
+  <text class="math" x="950" y="200" text-anchor="middle">σ<tspan class="sub" baseline-shift="sub">q</tspan><tspan class="sub" baseline-shift="super">2</tspan> = 1/12 DN²</text>
+  <line class="line" x1="540" y1="225" x2="540" y2="378" marker-end="url(#arrow)"/>
+  <line class="line" x1="950" y1="225" x2="950" y2="378" marker-end="url(#arrow)"/>
+
+  <!-- chaîne principale -->
+  <text class="math" x="160" y="350" text-anchor="middle">μ<tspan class="sub" baseline-shift="sub">p</tspan>, σ<tspan class="sub" baseline-shift="sub">p</tspan><tspan class="sub" baseline-shift="super">2</tspan></text>
+  <line class="line" x1="100" y1="403" x2="310" y2="403" marker-end="url(#arrow)"/>
+  <circle class="node" cx="332" cy="403" r="20"/>
+  <path d="M320,391 L344,415 M344,391 L320,415" stroke="#000" stroke-width="3"/>
+  <text class="math" x="332" y="470" text-anchor="middle">η</text>
+
+  <text class="math" x="436" y="350" text-anchor="middle">μ<tspan class="sub" baseline-shift="sub">e</tspan>, σ<tspan class="sub" baseline-shift="sub">e</tspan><tspan class="sub" baseline-shift="super">2</tspan></text>
+  <line class="line" x1="352" y1="403" x2="518" y2="403" marker-end="url(#arrow)"/>
+  <circle class="node" cx="540" cy="403" r="20"/>
+  <path d="M540,389 L540,417 M526,403 L554,403" stroke="#000" stroke-width="3"/>
+
+  <line class="line" x1="560" y1="403" x2="728" y2="403" marker-end="url(#arrow)"/>
+  <circle class="node" cx="750" cy="403" r="20"/>
+  <path d="M738,391 L762,415 M762,391 L738,415" stroke="#000" stroke-width="3"/>
+  <text class="math" x="750" y="466" text-anchor="middle">K<tspan class="sub" baseline-shift="sub">E</tspan> = 1/K</text>
+  <text class="unit" x="750" y="498" text-anchor="middle">(DN/e⁻)</text>
+
+  <line class="line" x1="770" y1="403" x2="926" y2="403" marker-end="url(#arrow)"/>
+  <rect class="node" x="928" y="381" width="44" height="44"/>
+  <path d="M936,417 L947,417 L947,403 L958,403 L958,389 L966,389" stroke="#000" stroke-width="3" fill="none"/>
+
+  <line class="line" x1="972" y1="403" x2="1200" y2="403" marker-end="url(#arrow)"/>
+  <text class="math" x="1150" y="350" text-anchor="middle">μ<tspan class="sub" baseline-shift="sub">y</tspan>, σ<tspan class="sub" baseline-shift="sub">y</tspan><tspan class="sub" baseline-shift="super">2</tspan></text>
+
+  <!-- étiquettes de domaine -->
+  <text class="lbl" x="122" y="580" text-anchor="middle">Entrée</text>
+  <text class="unit" x="122" y="618" text-anchor="middle">(photons)</text>
+  <text class="lbl" x="659" y="580" text-anchor="middle">Capteur / caméra</text>
+  <text class="unit" x="659" y="618" text-anchor="middle">(électrons)</text>
+  <text class="lbl" x="1180" y="580" text-anchor="middle">Sortie</text>
+  <text class="unit" x="1180" y="618" text-anchor="middle">(DN)</text>
+</svg>

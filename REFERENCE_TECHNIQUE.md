@@ -1078,9 +1078,12 @@ les autres estimateurs ; le retrait du pixel est l'option
 `--esf-lsf-remove-pixel-aperture`). `SyntheticSlantedEdge` accepte
 `pixel_integration=True` : bord et PSF calculés sur une grille
 `supersample` fois plus fine, puis moyennés sur chaque pixel, et vérité
-multipliée par `|sinc(f)|`. Le comportement par défaut du simulateur
-(échantillonnage ponctuel) est conservé pour la reproductibilité des
-études. Tests ajoutés (`tests/test_mtf.py`) : vérité du simulateur
+multipliée par `|sinc(f)|`. Depuis la version 0.3.1,
+c'est le **comportement par défaut** : l'échantillonnage ponctuel des
+versions 0.1 à 0.3 était un mauvais choix (il replie les bords fins et
+fausse la MTF près du Nyquist) ; il reste accessible par
+`pixel_integration=False` pour reproduire d'anciens résultats, dont les
+études antérieures de cette référence. Tests ajoutés (`tests/test_mtf.py`) : vérité du simulateur
 intégré, relation exacte entre les deux options, et choix entre les
 hypothèses « système » et « optique » sur 12 tirages, stable sur les 30
 valeurs de `EOQUAL_TEST_SEED`.
@@ -1100,8 +1103,8 @@ bruit et avec σ = 0,6 px, `numeric` donne 0,571 et `pchip` 0,579 pour une
 vérité de 0,577 ; `tikhonov` (λ automatique) sous-estime nettement (0,499)
 et `sigmoid` surestime au Nyquist (0,160 pour 0,108). Sur le simulateur à
 échantillonnage ponctuel, un bord fin (σ = 0,6 px) est replié et la MTF
-mesurée au Nyquist double (0,31 pour 0,17) : il faut `pixel_integration=True`
-pour juger la justesse près du Nyquist.
+mesurée au Nyquist double (0,31 pour 0,17) : d'où l'intégration sur le pixel
+par défaut.
 
 **Historique du problème (constat du 2026-11-08).**
 

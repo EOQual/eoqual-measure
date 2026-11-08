@@ -2,6 +2,16 @@
 
 ## Version History
 
+0.3.1 (2026-11-08)
+
+:   -   **Simulateur de bord intégré sur le pixel par défaut** :
+        `SyntheticSlantedEdge(pixel_integration=True)` devient le défaut.
+        L'échantillonnage ponctuel des versions 0.1 à 0.3 était un modèle
+        irréaliste (bords fins repliés, MTF faussée près du Nyquist) ;
+        `pixel_integration=False` le reproduit. **Changement de
+        comportement** : les images générées et la vérité
+        `mtf_theoretical` (qui inclut désormais `|sinc(f)|`) changent.
+
 0.3.0 (2026-11-08)
 
 :   -   **MTF du système par défaut** : l'estimateur `esf_lsf` (méthode

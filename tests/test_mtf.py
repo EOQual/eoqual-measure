@@ -109,7 +109,7 @@ def _edge_pixelise(seed):
 def test_simulateur_integre_le_pixel():
     """Avec intégration sur le pixel, la vérité inclut |sinc(f)|."""
     gen, _ = _edge_pixelise(0)
-    ponctuel = SyntheticSlantedEdge(sigma_psf=0.8)
+    ponctuel = SyntheticSlantedEdge(sigma_psf=0.8, pixel_integration=False)
     for f in (0.1, 0.25, 0.5):
         assert gen.mtf_theoretical(f) == pytest.approx(ponctuel.mtf_theoretical(f) * np.sinc(f), rel=1e-12)
 

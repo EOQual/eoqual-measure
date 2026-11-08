@@ -2,7 +2,7 @@
 
 [tool.poetry]
 name = "eoqual-measure"
-version = "0.3.0"
+version = "0.3.1"
 description = "Controlled physical image quality measurements for Earth observation imaging systems"
 authors = ["Olivier Amram <olivier.amram@free.fr>"]
 maintainers = [

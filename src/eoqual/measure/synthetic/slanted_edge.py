@@ -105,16 +105,17 @@ class SyntheticSlantedEdge:
         faible (meilleur rapport signal/bruit).
     seed : int | None, default=None
         Graine du générateur aléatoire pour la reproductibilité du bruit.
-    pixel_integration : bool, default=False
-        Si ``True``, simule un vrai capteur : bord et PSF sont calculés sur
+    pixel_integration : bool, default=True
+        Par défaut, simule un vrai capteur : bord et PSF sont calculés sur
         une grille ``supersample`` fois plus fine, puis chaque pixel est la
         moyenne des sous-pixels qu'il couvre (intégration sur sa surface).
         La FTM théorique inclut alors celle du pixel, ``|sinc(f/fe)|`` : c'est
         la MTF du système avant échantillonnage que mesure un bord incliné.
-        Par défaut ``False`` : bord et PSF sont échantillonnés ponctuellement
-        au centre des pixels (comportement des versions 0.1 et 0.2, conservé
-        pour la reproductibilité des études), et la FTM théorique est celle de
-        la PSF seule.
+        ``False`` reproduit l'échantillonnage ponctuel des versions 0.1 à 0.3
+        (bord et PSF évalués au seul centre des pixels, FTM théorique de la
+        PSF seule) : un modèle irréaliste, qui replie les bords fins et fausse
+        la MTF mesurée près du Nyquist ; à n'employer que pour reproduire
+        d'anciens résultats.
     supersample : int, default=8
         Facteur de sur-échantillonnage utilisé si ``pixel_integration``.
 
@@ -148,7 +149,7 @@ class SyntheticSlantedEdge:
     noise_level: float = 0.001
     poisson_scale: float = 1000.0
     seed: int | None = None
-    pixel_integration: bool = False
+    pixel_integration: bool = True
     supersample: int = 8
 
     image: NDArray[np.float32] | None = field(default=None, init=False, repr=False)

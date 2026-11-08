@@ -859,6 +859,12 @@ class EsfLsfMTFEstimator(SlantedEdgeMTFEstimator):
     même convention `f / f_e` que les approches spatiale et spectrale,
     ce qui les rend directement comparables sur le même graphique.
 
+    Ouverture du pixel : comme les autres estimateurs, celui-ci renvoie la
+    MTF du système, pixel compris. Jusqu'à la version 0.2.0, il divisait
+    toujours par `sinc(f·pixel_pitch)` et renvoyait la MTF de l'optique
+    seule ; ce retrait est devenu l'option `remove_pixel_aperture`
+    (REFERENCE_TECHNIQUE.md, partie I, §9.15).
+
     Parameters
     ----------
     mode :
@@ -898,6 +904,11 @@ class EsfLsfMTFEstimator(SlantedEdgeMTFEstimator):
     tikhonov_lambda, tikhonov_lambda_grid :
         Options pour `esf_model="tikhonov"` uniquement -- voir
         `fit_esf_tikhonov`.
+    remove_pixel_aperture :
+        Si ``True``, divise la MTF par ``sinc(f·pixel_pitch)`` pour obtenir
+        la MTF de l'optique seule (usage de laboratoire). Par défaut
+        ``False`` : MTF du système, pixel compris, comme les autres
+        estimateurs et comme l'ISO 12233.
     """
 
     def __init__(
@@ -920,8 +931,10 @@ class EsfLsfMTFEstimator(SlantedEdgeMTFEstimator):
         lsf_tukey_alpha: float = 0.15,
         tikhonov_lambda: float | str = "auto",
         tikhonov_lambda_grid: NDArray[np.float64] | None = None,
+        remove_pixel_aperture: bool = False,
     ) -> None:
-        super().__init__(pixel_pitch=pixel_pitch)  # low_freq_ratio/block_gap hérités mais inutilisés ici
+        super().__init__(pixel_pitch=pixel_pitch)
+        self.remove_pixel_aperture = bool(remove_pixel_aperture)  # low_freq_ratio/block_gap hérités mais inutilisés ici
         if esf_model not in ESF_FIT_MODELS:
             raise ValueError(
                 f"'esf_model' must be one of {sorted(ESF_FIT_MODELS)}, got {esf_model!r}."
@@ -1002,7 +1015,11 @@ class EsfLsfMTFEstimator(SlantedEdgeMTFEstimator):
         # même SANS bruit ajouté.
         if self.esf_model in ("numeric", "tikhonov"):
             mtf = MTFCorrections.derivative(freqs, mtf, lsf_dx)
-        mtf = MTFCorrections.pixel_aperture(freqs, mtf, self.pixel_pitch)
+        # MTF du système par défaut, comme les autres estimateurs ; le retrait
+        # de l'ouverture du pixel (MTF de l'optique seule) est une option
+        # explicite (REFERENCE_TECHNIQUE.md, partie I, §1.5 et §9.15).
+        if self.remove_pixel_aperture:
+            mtf = MTFCorrections.pixel_aperture(freqs, mtf, self.pixel_pitch)
         frequency = freqs * self.pixel_pitch  # cycles / pixel_pitch-unit
 
         frequency_corrected = frequency / np.cos(esf_data.theta_rad)
@@ -1010,6 +1027,7 @@ class EsfLsfMTFEstimator(SlantedEdgeMTFEstimator):
         details: dict[str, Any] = {
             "mode": self.mode,
             "esf_model": self.esf_model,
+            "remove_pixel_aperture": self.remove_pixel_aperture,
             "fwhm": fwhm,
             "rer": rer,
             "x_esf": esf_data.x_esf,

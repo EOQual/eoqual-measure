@@ -67,6 +67,13 @@ def measure_mtf(
     Returns
     -------
     MTFResult
+
+    Notes
+    -----
+    Toutes les méthodes renvoient la MTF du système avant échantillonnage,
+    pixel compris. Pour la MTF de l'optique seule avec ``"esf_lsf"``, passer
+    ``remove_pixel_aperture=True``. Jusqu'à la version 0.2.0, ``"esf_lsf"``
+    retirait toujours le pixel (REFERENCE_TECHNIQUE.md, partie I, §9.15).
     """
     if method not in SLANTED_EDGE_ESTIMATORS:
         raise ValueError(

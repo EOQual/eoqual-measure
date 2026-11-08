@@ -105,6 +105,18 @@ class SyntheticSlantedEdge:
         faible (meilleur rapport signal/bruit).
     seed : int | None, default=None
         Graine du générateur aléatoire pour la reproductibilité du bruit.
+    pixel_integration : bool, default=False
+        Si ``True``, simule un vrai capteur : bord et PSF sont calculés sur
+        une grille ``supersample`` fois plus fine, puis chaque pixel est la
+        moyenne des sous-pixels qu'il couvre (intégration sur sa surface).
+        La FTM théorique inclut alors celle du pixel, ``|sinc(f/fe)|`` : c'est
+        la MTF du système avant échantillonnage que mesure un bord incliné.
+        Par défaut ``False`` : bord et PSF sont échantillonnés ponctuellement
+        au centre des pixels (comportement des versions 0.1 et 0.2, conservé
+        pour la reproductibilité des études), et la FTM théorique est celle de
+        la PSF seule.
+    supersample : int, default=8
+        Facteur de sur-échantillonnage utilisé si ``pixel_integration``.
 
     Attributes
     ----------
@@ -136,6 +148,8 @@ class SyntheticSlantedEdge:
     noise_level: float = 0.001
     poisson_scale: float = 1000.0
     seed: int | None = None
+    pixel_integration: bool = False
+    supersample: int = 8
 
     image: NDArray[np.float32] | None = field(default=None, init=False, repr=False)
     psf: NDArray[np.float64] | None = field(default=None, init=False, repr=False)
@@ -147,6 +161,8 @@ class SyntheticSlantedEdge:
             raise ValueError("sigma_psf doit être strictement positif.")
         if self.fe <= 0:
             raise ValueError("fe doit être strictement positif.")
+        if self.supersample < 1:
+            raise ValueError("supersample doit être un entier >= 1.")
         if self.orientation not in ("vertical", "horizontal"):
             raise ValueError(f"orientation inconnue : {self.orientation!r}")
         if self.noise_type not in ("none", "gaussian", "poisson_gaussian"):
@@ -175,9 +191,12 @@ class SyntheticSlantedEdge:
             idéal, non convoluée.
         """
         angle = np.deg2rad(self.angle_deg)
+        k = self.supersample if self.pixel_integration else 1
+        # Centres des sous-pixels, en unités de pixels du capteur (k = 1 :
+        # centres des pixels, comme dans les versions 0.1 et 0.2).
         y_idx, x_idx = np.meshgrid(
-            np.arange(self.ny, dtype=float),
-            np.arange(self.nx, dtype=float),
+            (np.arange(self.ny * k, dtype=float) + 0.5) / k - 0.5,
+            (np.arange(self.nx * k, dtype=float) + 0.5) / k - 0.5,
             indexing="ij",
         )
 
@@ -218,12 +237,14 @@ class SyntheticSlantedEdge:
         ValueError
             Si ``psf_type`` n'est pas reconnu.
         """
+        k = self.supersample if self.pixel_integration else 1
+        scale = self.sigma_psf * k          # paramètre d'échelle en sous-pixels
         if self.psf_type == "gaussian":
-            radius = int(np.ceil(4 * self.sigma_psf))  # 4σ -> ~99.99% énergie
+            radius = int(np.ceil(4 * scale))  # 4σ -> ~99.99% énergie
         elif self.psf_type == "lorentzian":
-            radius = int(np.ceil(10 * self.sigma_psf))  # queue plus lourde
+            radius = int(np.ceil(10 * scale))  # queue plus lourde
         elif self.psf_type == "pillbox":
-            radius = int(np.ceil(self.sigma_psf)) + 1
+            radius = int(np.ceil(scale)) + 1
         else:
             raise ValueError(f"psf_type inconnu : {self.psf_type!r}")
 
@@ -232,11 +253,11 @@ class SyntheticSlantedEdge:
         R2 = X**2 + Y**2
 
         if self.psf_type == "gaussian":
-            psf = np.exp(-R2 / (2 * self.sigma_psf**2))
+            psf = np.exp(-R2 / (2 * scale**2))
         elif self.psf_type == "lorentzian":
-            psf = 1.0 / (1.0 + R2 / self.sigma_psf**2)
+            psf = 1.0 / (1.0 + R2 / scale**2)
         else:  # pillbox
-            psf = (np.sqrt(R2) <= self.sigma_psf).astype(float)
+            psf = (np.sqrt(R2) <= scale).astype(float)
 
         psf_sum = psf.sum()
         if psf_sum <= 0:
@@ -263,6 +284,9 @@ class SyntheticSlantedEdge:
         psf = self.build_psf()
 
         image = fftconvolve(edge_ideal, psf, mode="same")
+        if self.pixel_integration and self.supersample > 1:
+            k = self.supersample                # intégration sur la surface du pixel
+            image = image.reshape(self.ny, k, self.nx, k).mean(axis=(1, 3))
         image = self._apply_noise(image)
 
         image = np.clip(image, 0.0, 1.0).astype(np.float32)
@@ -444,6 +468,10 @@ class SyntheticSlantedEdge:
             arg = 2 * np.pi * self.sigma_psf * f_absolute
             with np.errstate(divide="ignore", invalid="ignore"):
                 mtf = np.where(arg == 0, 1.0, 2 * j1(arg) / arg)
+
+        if self.pixel_integration:
+            # Intégration sur un pixel carré de côté 1/fe : MTF |sinc(f/fe)|.
+            mtf = mtf * np.abs(np.sinc(f_reduced))
 
         return mtf
 

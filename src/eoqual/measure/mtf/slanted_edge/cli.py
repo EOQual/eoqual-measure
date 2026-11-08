@@ -247,6 +247,7 @@ def process_plane(
         lsf_filter_type=args.esf_lsf_filter_type,
         lsf_window_length=args.esf_lsf_window_length,
         lsf_polyorder=args.esf_lsf_polyorder,
+        remove_pixel_aperture=args.esf_lsf_remove_pixel_aperture,
     )
     mtf_comparator = MTFComparator(
         estimators={
@@ -503,6 +504,12 @@ def parse_args() -> argparse.Namespace:
         "phase-ramp recentered, default), or 'tikhonov' (regularized "
         "ESF fit with per-bin precision weights, more robust to noise, "
         "see fit_esf_tikhonov docstring).",
+    )
+    parser.add_argument(
+        "--esf-lsf-remove-pixel-aperture",
+        action="store_true",
+        help="Divide the ESF/LSF MTF by sinc(f*pixel_pitch) to get the optics-only "
+        "MTF. Default: system MTF, pixel included, like the other estimators.",
     )
     parser.add_argument(
         "--esf-lsf-derivative-method",

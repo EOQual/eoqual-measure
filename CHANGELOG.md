@@ -2,6 +2,23 @@
 
 ## Version History
 
+0.3.0 (2026-11-08)
+
+:   -   **MTF du système par défaut** : l'estimateur `esf_lsf` (méthode
+        par défaut de `measure_mtf`) ne retire plus la MTF du pixel. Il
+        renvoie, comme les trois autres estimateurs, la MTF du système
+        avant échantillonnage, pixel compris (ISO 12233). **Changement de
+        comportement** : les valeurs de 0.2.0 étaient celles de l'optique
+        seule, plus fortes d'un facteur `1/sinc(f)` (+11 % à 0,25
+        cycle/pixel, +57 % au Nyquist).
+    -   Option `remove_pixel_aperture=True` (CLI
+        `--esf-lsf-remove-pixel-aperture`) pour la MTF de l'optique seule.
+    -   `SyntheticSlantedEdge(pixel_integration=True, supersample=8)` :
+        intégration sur le pixel, vérité incluant `|sinc(f)|`. Le défaut
+        (échantillonnage ponctuel) est conservé.
+    -   Tests de la MTF du système et de l'option ; analyse et justesse
+        mesurée : `REFERENCE_TECHNIQUE.md`, partie I, §9.15.
+
 0.2.0 (2026-10-27)
 
 :   -   **Projet signalé en cours de développement** (README, docstring

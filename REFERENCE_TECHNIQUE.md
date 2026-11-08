@@ -204,9 +204,14 @@ $$
 \text{MTF}_{\text{pixel}}(f) = \left|\frac{\sin(\pi f \cdot p)}{\pi f \cdot p}\right| = |\text{sinc}(f \cdot p)|
 $$
 
-où `p` est le pas physique du pixel (`pixel_pitch`). Diviser la MTF
-mesurée par ce terme (`MTFCorrections.pixel_aperture`) déconvolue cet
-effet d'intégration, isolant la MTF de l'optique seule.
+où `p` est le pas physique du pixel (`pixel_pitch`). Ce terme fait
+partie de la **MTF du système** avant échantillonnage, celle que mesure un
+bord incliné et que tous les estimateurs renvoient par défaut. Diviser la
+MTF mesurée par ce terme (`MTFCorrections.pixel_aperture`) déconvolue
+l'intégration sur le pixel et isole la MTF de l'optique seule : c'est une
+option de `EsfLsfMTFEstimator` (`remove_pixel_aperture=True`), pour l'usage
+de laboratoire où l'on caractérise un objectif indépendamment du capteur.
+Jusqu'à la version 0.2.0, ce retrait était systématique (§9.15).
 
 #### 1.6 Biais de dérivation numérique
 
@@ -586,7 +591,9 @@ Surcharge `estimate()` en entier.
      (`GeometricESFBuilder`), donc valable quel que soit `esf_model`.
 5. **Corrections** : `MTFCorrections.derivative` (biais `np.gradient`,
    **uniquement si `esf_model="numeric"`**, voir §9) puis
-   `MTFCorrections.pixel_aperture` (aperture pixel, systématique).
+   `MTFCorrections.pixel_aperture` (aperture pixel), **seulement si
+   `remove_pixel_aperture=True`** : par défaut, MTF du système (§1.5,
+   §9.15).
 
 **Paramètres constructeur** :
 
@@ -595,6 +602,7 @@ Surcharge `estimate()` en entier.
 | `mode` | `"sigmoid"` | Localisation du bord par ligne (`ParametricEdgeDetector`) |
 | `esf_model` | `"pchip"` | Modèle ESF→LSF : `"numeric"`, `"sigmoid"`, `"pchip"` |
 | `pixel_pitch` | 1.0 | §2.4 |
+| `remove_pixel_aperture` | `False` | Retire la MTF du pixel (MTF de l'optique seule), §1.5 |
 | `fit_window` | 5 | Demi-largeur de fenêtre du détecteur de bord |
 | `esf_half_width` | 20.0 | Demi-largeur (px) de la bande d'ESF |
 | `esf_oversample` | 5 | Échantillons d'ESF par pixel capteur, ou `"auto"` (§12.3bis) |
@@ -1061,6 +1069,108 @@ bootstrap moyen −25 à −37 % sur les mires de test ; les estimateurs
 spatial, spectral et corrélation spectrale ne sont pas concernés.
 
 ---
+
+#### 9.15 Correction d'ouverture du pixel (`esf_lsf`)
+
+**Résolu en 0.3.0.** `esf_lsf` renvoie désormais la MTF du système, comme
+les autres estimateurs ; le retrait du pixel est l'option
+`remove_pixel_aperture` (défaut `False`, CLI
+`--esf-lsf-remove-pixel-aperture`). `SyntheticSlantedEdge` accepte
+`pixel_integration=True` : bord et PSF calculés sur une grille
+`supersample` fois plus fine, puis moyennés sur chaque pixel, et vérité
+multipliée par `|sinc(f)|`. Le comportement par défaut du simulateur
+(échantillonnage ponctuel) est conservé pour la reproductibilité des
+études. Tests ajoutés (`tests/test_mtf.py`) : vérité du simulateur
+intégré, relation exacte entre les deux options, et choix entre les
+hypothèses « système » et « optique » sur 12 tirages, stable sur les 30
+valeurs de `EOQUAL_TEST_SEED`.
+
+**Justesse mesurée en 0.3.0** (bord intégré sur le pixel, σ = 0,8 px,
+128 × 128, 5°, bruit 0,002, 12 tirages) :
+
+| `esf_model` | MTF(0,25) mesurée | vérité | écart-type d'une mesure |
+|---|---|---|---|
+| `numeric` | 0,4058 | 0,4088 | 0,0009 |
+| `pchip` | 0,4137 | 0,4088 | 0,0008 |
+
+Restent deux biais de méthode, petits devant le facteur `1/sinc` corrigé
+mais supérieurs à l'incertitude statistique : `numeric` sous-estime
+d'environ 0,003 (≈ 3 u), `pchip` surestime d'environ 0,005 (≈ 6 u). Sans
+bruit et avec σ = 0,6 px, `numeric` donne 0,571 et `pchip` 0,579 pour une
+vérité de 0,577 ; `tikhonov` (λ automatique) sous-estime nettement (0,499)
+et `sigmoid` surestime au Nyquist (0,160 pour 0,108). Sur le simulateur à
+échantillonnage ponctuel, un bord fin (σ = 0,6 px) est replié et la MTF
+mesurée au Nyquist double (0,31 pour 0,17) : il faut `pixel_integration=True`
+pour juger la justesse près du Nyquist.
+
+**Historique du problème (constat du 2026-11-08).**
+
+Jusqu'en 0.2.0, `EsfLsfMTFEstimator.compute_mtf` divisait toujours la
+MTF par `sinc(f·pixel_pitch)` (`MTFCorrections.pixel_aperture`, §1.5), sans
+paramètre pour l'éviter. L'estimateur renvoie donc la MTF **de l'optique
+seule**, pixel retiré.
+
+**Origine du choix.** La correction est présente depuis la première version
+publique (`e43ffe0`, 0.1.0, ici comme dans eoqual-core `6a08ae7`). Le dépôt
+ne contient pas d'historique antérieur qui l'explique. La seule justification
+écrite est celle du §1.5 : « isoler la MTF de l'optique seule », d'après
+Boreman (2001). Elle correspond à l'usage de laboratoire où l'on caractérise
+un objectif indépendamment du capteur. Elle ne correspond pas à la
+qualification d'un imageur, où l'on veut la MTF du système avant
+échantillonnage (optique × pixel × diffusion × mouvements), celle que
+publient les opérateurs et que l'ISO 12233 mesure.
+
+**Conséquences.**
+
+1. **Incohérence entre estimateurs.** `spatial`, `spectral` et
+   `spectral_correlation` n'appliquent pas la correction, ni la mesure sur
+   arêtes naturelles d'eoqual-metrics (AEM, SASBEM). Les comparateurs
+   (`MTFComparator.compare`) mettent donc côte à côte une MTF de l'optique
+   et trois MTF du système : l'écart entre `esf_lsf` et les autres vaut
+   `1/sinc(f)`, soit +11 % à 0,25 cycle/pixel et +57 % au Nyquist, et passe
+   pour une différence de méthode.
+2. **MTF à Nyquist et MTF50 surestimées** pour tout utilisateur qui prend la
+   valeur de `measure_mtf` pour celle de son instrument : d'un facteur
+   `π/2 ≈ 1,57` au Nyquist.
+3. **Validation biaisée sur le simulateur.** `SyntheticSlantedEdge` convolue
+   un échelon échantillonné par la PSF échantillonnée, sans intégration sur
+   le pixel, et sa vérité `mtf_theoretical` est la MTF de la PSF seule. Pour
+   cette image, la MTF juste est la MTF brute ; la division par le sinc la
+   surestime. Mesure (`esf_model="numeric"`, sans bruit, 256 × 256, 5°) :
+
+   | σ PSF (px) | f (cycle/px) | `esf_lsf` | vérité | `esf_lsf` × sinc(f) |
+   |---|---|---|---|---|
+   | 1,2 | 0,10 | 0,764 | 0,753 | 0,751 |
+   | 1,2 | 0,25 | 0,188 | 0,169 | 0,169 |
+   | 2,0 | 0,10 | 0,465 | 0,454 | 0,457 |
+
+   Remultipliée par `sinc(f)`, la mesure retombe sur la vérité. À l'inverse,
+   sur un bord physiquement intégré sur les pixels (bord et PSF calculés sur
+   une grille 8 fois plus fine, puis moyennés par blocs), `esf_lsf` retrouve
+   la MTF de la PSF seule, ce qui confirme que la correction retire bien
+   l'intégration du pixel quand elle existe.
+4. **Les tests ne voient pas le biais.** `tests/test_mtf.py` ne compare à la
+   vérité que l'estimateur `spatial` ; pour `esf_lsf`, estimateur par défaut,
+   il ne vérifie que des propriétés qualitatives.
+
+**Ce qui a été reconsidéré** (tout est fait en 0.3.0, sauf la dernière
+vérification, à mener sur les études et sur le livre).
+
+- Ne plus retirer le pixel par défaut : `esf_lsf` doit renvoyer, comme les
+  autres estimateurs, la MTF du système. La correction devient une option
+  explicite, par exemple `remove_pixel_aperture=False` par défaut, pour l'usage
+  « optique seule ».
+- Rendre le simulateur cohérent avec un capteur réel : intégration sur le
+  pixel (bord et PSF calculés sur une grille fine, puis moyennés), et une
+  vérité qui inclut `sinc(f)` ; ou bien documenter qu'il simule un
+  échantillonnage ponctuel.
+- Ajouter un test de justesse de `esf_lsf` contre la vérité (MTF à 0,25 et à
+  Nyquist, tolérance tirée des incertitudes), pour chaque `esf_model`.
+- Vérifier les tableaux de cette référence et du livre qui reposent sur
+  `esf_lsf` (comparaison des modèles ESF → LSF, §9.8, §9.12, études de
+  sensibilité) : leurs écarts à la vérité incluent ce facteur `1/sinc(f)`.
+- Le comportement changerait la valeur renvoyée par `measure_mtf` : à
+  annoncer dans les notes de version (0.3.0).
 
 ### 10. Bibliographie
 

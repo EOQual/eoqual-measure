@@ -38,7 +38,7 @@ calcule des indicateurs de qualité, dont certains sans référence sur
 scène quelconque (ex. MTF@Nyquist sur arêtes naturelles).
 """
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 __title__ = "eoqual.measure"
 __description__ = "Controlled physical image quality measurements for Earth observation imaging systems"
 __url__ = "https://github.com/EOQual/eoqual-measure"

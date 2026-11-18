@@ -2,6 +2,22 @@
 
 ## Version History
 
+0.4.0 (2026-11-18)
+
+:   -   **Modèle de bruit noté σ² = a + b·μ** (a plancher, b pente = 1/K),
+        comme dans les autres modules EOQual : un bruit stationnaire
+        s'écrit a = σ², b = 0. Méthodes et résultats inchangés.
+        **Changement d'API** (lettres inversées par rapport à 0.3.1) :
+        -   `PTCResult`, `PushbroomNoiseResult`, `SensorTruth` : `a` est le
+            plancher, `b` la pente ; `cov` est ordonnée (a, b) ; le gain
+            vaut 1/b.
+        -   `measure_pushbroom_noise` : le plancher s'impose par `a=` (au
+            lieu de `b=`), et `b_fixed` devient `a_fixed` ; la covariance
+            1 × 1 porte alors sur b.
+        -   `snr_at_levels` : une covariance 1 × 1 porte sur b (a imposé).
+        -   `add_noise(image, a, b)` : `a` est le plancher, `b` la pente.
+        -   Exemple `noise_intercomparison.py` : `--a` plancher, `--b` pente.
+
 0.3.1 (2026-11-08)
 
 :   -   **Simulateur de bord intégré sur le pixel par défaut** :

@@ -3648,7 +3648,7 @@ eoqual/measure/radiometry/
 `a`, `b` et `cov` : `PTCResult`, `PushbroomNoiseResult`, ou un modèle
 externe.
 
-##### 10.3.1 `measure_pushbroom_noise(images, *, dark, segment_length=32, along_order=2, across_order=2, rho_threshold=None, b=None)`
+##### 10.3.1 `measure_pushbroom_noise(images, *, dark, segment_length=32, along_order=2, across_order=2, rho_threshold=None, a=None)`
 
 1. Contrôle des images (M, W), même W ; offset par détecteur tiré de
    `dark` (scalaire, profil (W,) ou (1, W), `DarkFrameResult`).
@@ -4347,7 +4347,7 @@ Corrections apportées pendant la mise au point, chapitre par chapitre : défaut
     bruit spatial ne valait que deux fois le temporel. Le test utilise une
     PRNU de 3 %.
 
-- 2026-11-18 : notation du modèle de bruit inversée, **σ² = a + b·μ** (a
+- 2026-11-18 (0.4.0) : notation du modèle de bruit inversée, **σ² = a + b·μ** (a
   plancher, b pente = 1/K), comme dans les autres modules EOQual et les
   fichiers de configuration des chaînes de débruitage : un bruit
   stationnaire s'écrit a = σ², b = 0. Méthodes et résultats inchangés ;

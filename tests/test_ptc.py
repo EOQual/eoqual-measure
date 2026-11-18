@@ -29,13 +29,13 @@ def test_gain(sensor, ptc):
     t = sensor.truth
     assert abs(ptc.gain - t.gain) < 5 * ptc.u_gain
     assert ptc.gain == pytest.approx(t.gain, rel=0.02)
-    assert abs(ptc.a - t.a) < 5 * ptc.u_a
+    assert abs(ptc.b - t.b) < 5 * ptc.u_b
 
 
 def test_read_noise(sensor, ptc):
     t = sensor.truth
     assert abs(ptc.read_noise_e - t.params.read_noise) < 5 * ptc.u_read_noise_e + 0.01 * t.params.read_noise
-    assert abs(ptc.b - t.b) < 5 * ptc.u_b + 0.005 * t.b
+    assert abs(ptc.a - t.a) < 5 * ptc.u_a + 0.005 * t.a
 
 
 def test_fit_quality(ptc):
@@ -74,7 +74,7 @@ def test_full_well_saturation():
     r = measure_ptc(flats, s.dark(n_frames=16, seed=2).frames, saturation_dn=t.saturation_dn)
 
     mu = np.linspace(fw - 10 * np.sqrt(fw), fw, 2001)
-    expected = _clipped_variance_dn(mu, fw, t.gain, t.b)
+    expected = _clipped_variance_dn(mu, fw, t.gain, t.a)
     i_sat = int(np.argmin(np.abs(r.signal - r.saturation_signal_dn)))
     tol = 5 * r.u_variance[i_sat]
     plateau = mu[expected >= expected.max() - tol]

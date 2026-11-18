@@ -1863,7 +1863,7 @@ effets de saturation/quantification d'un capteur réel de façon contrôlée
 ### Non-linéarité aux extrêmes de luminance
 
 **Constat d'expérience confirmé par la simulation** : la relation
-bruit-luminance σ²(I) = a·I + b n'est généralement valide que sur une plage
+bruit-luminance σ²(I) = a + b·I n'est généralement valide que sur une plage
 intermédiaire. En basse luminance, le pas de quantification du capteur
 devient non négligeable devant l'écart-type du bruit ; en haute luminance,
 l'écrêtage/saturation **comprime artificiellement** la variance mesurée (les
@@ -2123,7 +2123,7 @@ dans le titre. Un tableau récapitulatif du SNR des trois bandes est
 | Besoin | Méthode conseillée |
 |---|---|
 | Estimation rapide, image globalement homogène | `wavelets` ou `skimage_estimate_sigma` |
-| Caractériser un bruit dépendant du signal (σ² = a·I + b) | `ponomarenko` avec `num_bins > 1` |
+| Caractériser un bruit dépendant du signal (σ² = a + b·I) | `ponomarenko` avec `num_bins > 1` |
 | Scène très hétérogène, résolution métrique, objets nombreux | `adaptive_segmentation` |
 | Robustesse sans réglage fin de seuil de platitude | `pca_estimate` |
 | Référence / méthode historique du projet | `flat_patches` |
@@ -2316,7 +2316,7 @@ particulier (indiqué) ; — : sans objet. *Sol* : banc de caractérisation ;
 | `rts_pixels` | ✔ | ✱ bloc remis en (M, 1, W) | — | longue pile temporelle | sol | 8 |
 | `adc_histogram` | ✔ | ✔ | ✔ | fond lisse ou rampe | sol | 9 |
 | `pushbroom_temporal_noise` | — | ✔ | — | scènes peu texturées, plusieurs niveaux | vol | 10 |
-| `snr_model` | ✔ (PTC) | ✔ (push broom) | ✔ | modèle σ² = a·μ + b | sol, vol | 10 |
+| `snr_model` | ✔ (PTC) | ✔ (push broom) | ✔ | modèle σ² = a + b·μ | sol, vol | 10 |
 | `spatial_noise` | ✔ pile | ✔ zone uniforme | ✔ bandes, aller/retour | champ ou zone uniforme | sol, vol | 11 |
 | `equalization_noise` | — | ✔ | — | zone uniforme égalisée | sol, vol | 11 |
 | `noise_power_spectrum` | ✔ | ✔ image | ✔ image | zones uniformes, produits traités | sol, vol | 12 |
@@ -2366,9 +2366,11 @@ dématriçage, rééchantillonnage ou compression), `cnr_target` sur mire.
 
 - **Unités** : les métriques travaillent en DN ; un résultat en e⁻
   suppose le gain K (e⁻/DN) connu ou mesuré.
-- **Modèle de bruit** : σ²(μ) = a·μ + b, μ signal corrigé de l'obscurité,
-  a = 1/K, b variance à signal nul (bruit de lecture et quantification,
-  §2.2).
+- **Modèle de bruit** : σ²(μ) = a + b·μ, μ signal corrigé de l'obscurité,
+  a variance à signal nul ou plancher (bruit de lecture et quantification,
+  §2.2), b = 1/K la pente. Un bruit stationnaire de variance σ² s'écrit
+  a = σ², b = 0. Attention : la littérature (Foi et al., 2008, modèle
+  poissonnien-gaussien) note souvent σ² = a·y + b, lettres inversées.
 - **Incertitudes** : chaque grandeur `x` est accompagnée de `u_x`,
   incertitude-type (1 σ) due au bruit des données. Les dispersions
   spatiales (DSNU, PRNU…) sont celles de la carte *réalisée* du capteur
@@ -2433,7 +2435,7 @@ où K_E est le **gain système** en DN/e⁻ (convention EMVA).
 
 > **Convention de ce projet** : K désigne le gain de conversion en
 > **e⁻/DN** (convention de Janesick, plus courante en caractérisation
-> spatiale). Donc K_E = 1/K, et la pente du modèle de bruit vaut a = 1/K.
+> spatiale). Donc K_E = 1/K, et la pente du modèle de bruit vaut b = 1/K.
 
 #### 2.2 Sources de bruit temporel
 
@@ -2444,7 +2446,7 @@ aminci par un tirage de Bernoulli reste poissonnien : le nombre
 d'électrons suit Poisson(η·μ_p), donc σ_e² = μ_e. Le bruit de photons est
 un **bruit de comptage en électrons**. Sa variance en DN vaut
 σ_e²/K² = μ_e/K² = μ/K, avec μ = μ_e/K le signal en DN : c'est l'origine
-du terme a·μ.
+du terme b·μ.
 
 **Courant d'obscurité.** Des électrons sont générés thermiquement dans le
 silicium, indépendamment de la lumière, au taux I_d (e⁻/s/pixel). Pendant
@@ -2474,9 +2476,9 @@ le modèle additif ne tient plus (partie V, §7).
 **Variance totale.** Les sources étant indépendantes, les variances
 s'ajoutent. En DN, et en notant μ = (μ_e)/K le signal au-dessus de l'offset :
 
-σ_y² = (σ_lect² + σ_d²)/K² + σ_q² + μ/K = **b + a·μ**
+σ_y² = (σ_lect² + σ_d²)/K² + σ_q² + μ/K = **a + b·μ**
 
-avec a = 1/K et b = σ_y,dark² = (σ_lect² + σ_d²)/K² + 1/12. C'est la
+avec a = σ_y,dark² = (σ_lect² + σ_d²)/K² + 1/12 et b = 1/K. C'est la
 **courbe de transfert photonique** (PTC) : la variance temporelle est
 affine en le signal, de pente 1/K. Mesurer cette pente donne le gain sans
 aucune référence radiométrique (Janesick 2007). En S0, σ_d = 0.
@@ -2623,7 +2625,7 @@ tolérances de validation.
 
 | Mesure | Entrée | Sorties principales |
 |---|---|---|
-| `measure_dark_frame` | pile d'obscurité (K, H, W), ou bloc push broom (M, W) | carte d'offset, b = σ²(0), DSNU et décomposition, stationnarité |
+| `measure_dark_frame` | pile d'obscurité (K, H, W), ou bloc push broom (M, W) | carte d'offset, a = σ²(0), DSNU et décomposition, stationnarité |
 | `measure_temporal_noise` | paire ou pile de champs uniformes | σ²_temp, signal corrigé de l'obscurité |
 | `measure_ptc` | une paire par niveau + obscurité | K (e⁻/DN), σ_lect (e⁻), saturation, linéarité, χ² |
 
@@ -2639,16 +2641,16 @@ La décomposition ligne / colonne / pixel de la DSNU utilise l'outil commun du �
 ##### 3.2.1 Pile d'obscurité
 
 Une pose d'obscurité y_k(i, j), k = 1…K, contient l'offset fixe o_ij
-(offset moyen + DSNU) et le bruit temporel de variance b (§2.2) :
+(offset moyen + DSNU) et le bruit temporel de variance a (§2.2) :
 
-y_k = o + e_k,  E[e_k] = 0,  Var[e_k] = b.
+y_k = o + e_k,  E[e_k] = 0,  Var[e_k] = a.
 
 - La moyenne temporelle ô = (1/K) Σ y_k estime la carte o, avec un résidu
-  de variance b/K par pixel.
+  de variance a/K par pixel.
 - La variance temporelle (1/(K − 1)) Σ (y_k − ô)², moyennée sur les
-  N pixels, estime b avec une incertitude relative de √(2/((K − 1)·N)).
-- La variance spatiale de ô vaut s²(o) + b/K. La DSNU s'en déduit par
-  DSNU² = var_spatiale(ô) − b̂/K (EMVA 1288, chap. 8).
+  N pixels, estime a avec une incertitude relative de √(2/((K − 1)·N)).
+- La variance spatiale de ô vaut s²(o) + a/K. La DSNU s'en déduit par
+  DSNU² = var_spatiale(ô) − â/K (EMVA 1288, chap. 8).
 
 **Incertitude de la DSNU.** On estime la dispersion de la carte
 *réalisée* o, et non celle d'une population de capteurs. Notons
@@ -2665,7 +2667,7 @@ b/N si le bruit est indépendant d'un pixel à l'autre : les motifs fixes
 sont les mêmes dans toutes les poses et disparaissent des écarts entre
 f_k. On en tire deux contrôles :
 
-- le **rapport de stationnarité** var(f) / (b̂/N), proche de 1 à
+- le **rapport de stationnarité** var(f) / (â/N), proche de 1 à
   √(2/(K − 1)) près pour une pile stationnaire. Il croît en cas de dérive
   thermique, de bruit commun à toute l'image ou de bruit de ligne, ces
   deux derniers étant corrélés entre pixels ;
@@ -2696,19 +2698,19 @@ PRNU, il dépasse 1 % de σ².
 ##### 3.2.4 Courbe de transfert photonique
 
 À chaque niveau i, on calcule μ_i = moyenne − offset moyen et σ_i² par
-paire. Sur la plage linéaire, σ²(μ) = a·μ + b (§2.2), d'où :
+paire. Sur la plage linéaire, σ²(μ) = a + b·μ (§2.2), d'où :
 
-- **gain** K = 1/a (e⁻/DN), avec u(K) = u(a)/a² ;
-- **bruit de lecture** σ_lect = K·√(b − 1/12) (e⁻), où le terme de
+- **gain** K = 1/b (e⁻/DN), avec u(K) = u(b)/b² ;
+- **bruit de lecture** σ_lect = K·√(a − 1/12) (e⁻), où le terme de
   quantification est retiré (option). Son incertitude se propage avec la
-  covariance de (a, b) : J = (−√(b − q)/a², 1/(2a·√(b − q))),
+  covariance de (a, b) : J = (1/(2b·√(a − q)), −√(a − q)/b²),
   u² = J·cov·Jᵀ.
 
 **Ajustement pondéré.** On pondère par w_i = 1/u_i², avec
 u_i = σ_i²·√(2/(N − 1)) (paire). Les incertitudes croissent avec le
 niveau : un ajustement non pondéré serait dominé par les forts signaux et
-contraindrait mal b. Le point d'obscurité (μ = 0, σ² = b̂) est ajouté par
-défaut, car c'est lui qui fixe b. Le χ² réduit, de loi χ²_ν/ν avec
+contraindrait mal a. Le point d'obscurité (μ = 0, σ² = â) est ajouté par
+défaut, car c'est lui qui fixe a. Le χ² réduit, de loi χ²_ν/ν avec
 ν = n − 2, vaut 1 ± √(2/ν) si le modèle affine et les incertitudes sont
 corrects. Il sert à contrôler le modèle.
 
@@ -2756,18 +2758,18 @@ Dans le registre (`config.py`), la PTC s'appuie sur `temporal_noise`
    (M, W) devient (M, 1, W) : chaque ligne est une pose, chaque colonne un
    détecteur.
 2. `offset_map` = moyenne temporelle, `temporal_variance_map` = variance
-   en 1/(K − 1), b̂ = moyenne de la carte de variance.
-3. `decompose_spatial(offset_map, noise_variance=b̂/K)` donne la DSNU et sa
+   en 1/(K − 1), â = moyenne de la carte de variance.
+3. `decompose_spatial(offset_map, noise_variance=â/K)` donne la DSNU et sa
    décomposition, avec u(DSNU) par la formule du §3.2.1.
 4. Stationnarité : moyennes des poses, pente par moindres carrés sur
-   l'indice centré, rapport var(f)/(b̂/N).
+   l'indice centré, rapport var(f)/(â/N).
 
 ##### 3.3.2 `measure_temporal_noise(frames, *, dark=None, method="auto")`
 
 - `"auto"` choisit la paire pour K = 2 et la pile au-delà.
 - `dark` (scalaire, carte (H, W) ou `DarkFrameResult`) ne sert qu'au
   niveau : signal = moyenne − offset moyen. La variance n'est pas
-  corrigée de b, qui fait partie de σ²(μ).
+  corrigée de a, qui fait partie de σ²(μ).
 - Une pile passée à la place de `dark` est refusée, pour éviter la
   confusion avec une carte d'offset.
 
@@ -2781,7 +2783,7 @@ Dans le registre (`config.py`), la PTC s'appuie sur `temporal_noise`
    (≤ `fit_fraction` × saturation, fraction saturée ≤
    `max_saturated_fraction`).
 4. Ajout du point d'obscurité (`include_dark=True`).
-5. Moindres carrés pondérés y = a·x + b : covariance (XᵀWX)⁻¹ non
+5. Moindres carrés pondérés y = a + b·x : covariance (XᵀWX)⁻¹ non
    renormalisée par le χ², car les incertitudes sont connues. Le χ²
    réduit est rendu séparément.
 6. Grandeurs dérivées (§3.2.4) et erreur de linéarité si `exposures` est
@@ -2830,7 +2832,7 @@ print("niveaux retenus", ptc.used)
 **Données réelles** : mêmes appels sur des tableaux (K, H, W) lus par
 ailleurs (FITS, TIFF…). Recommandations tirées du §2 :
 
-- assez de poses d'obscurité pour que b̂/K soit petit devant la DSNU
+- assez de poses d'obscurité pour que â/K soit petit devant la DSNU
   (K ≥ 16) ;
 - vérifier `stationarity_ratio` avant d'interpréter la DSNU ;
 - pour la PTC, une dizaine de niveaux répartis sur toute la plage, dont
@@ -2846,7 +2848,7 @@ ailleurs (FITS, TIFF…). Recommandations tirées du §2 :
 #### 3.4 Validation
 
 Toutes les tolérances découlent des incertitudes-types rendues par les
-mesures (5 u), plus une marge de 0,5 % de b pour la validité du terme de
+mesures (5 u), plus une marge de 0,5 % de a pour la validité du terme de
 quantification 1/12. Les capteurs de test changent avec
 `EOQUAL_TEST_SEED` : la série passe pour 50 décalages de graine.
 
@@ -2854,13 +2856,13 @@ Résultat type (graine 7, DSNU marquée, 64 poses) :
 
 | Grandeur | Mesurée | Vraie |
 |---|---|---|
-| b (DN²) | 2,8586 ± 0,0020 | 2,8611 |
+| a (DN²) | 2,8586 ± 0,0020 | 2,8611 |
 | DSNU (DN) | 1,3761 ± 0,0008 | 1,3755 |
 | σ_r / σ_c / σ_p (DN) | 0,425 / 0,841 / 1,003 | 0,427 / 0,838 / 1,003 |
 | K (e⁻/DN), PTC à 11 niveaux | 2,9997 ± 0,0070 | 3 |
 | σ_lect (e⁻) | 4,997 ± 0,012 | 5 |
 
-L'écart sur b (−0,09 %, soit 1,2 u) reste dans l'approximation du terme
+L'écart sur a (−0,09 %, soit 1,2 u) reste dans l'approximation du terme
 de quantification.
 
 Liste des tests : annexe B, §B.3.
@@ -2870,7 +2872,7 @@ Liste des tests : annexe B, §B.3.
 - *Bruit corrélé entre pixels* (bruit de ligne, S3) : les incertitudes
   supposent des pixels indépendants et sont alors sous-estimées. Le
   rapport de stationnarité le signale pour l'obscurité.
-- *Pixels chauds* (S1) : ils gonflent la DSNU et b. Des statistiques
+- *Pixels chauds* (S1) : ils gonflent la DSNU et a. Des statistiques
   robustes (médiane, écrêtage sigma) sont prévues en option avec S1.
 - *Source instable* : la paire n'est pas corrigée d'une fluctuation
   multiplicative ε entre poses. Le biais ε²·var_spatiale/2 est négligeable
@@ -2905,7 +2907,7 @@ températures, loi en température.
 Pour une pile de K_i poses au temps t_i, la moyenne m_i(p) d'un pixel p
 vaut o(p) + I(p)·t_i, avec un bruit de variance v_i(p)/K_i. La moyenne
 temporelle de la pose ne contient pas que le bruit de lecture : v_i(p) =
-b + I(p)·t_i/K, car le bruit d'obscurité est poissonnien. Par moindres
+a + I(p)·t_i/K, car le bruit d'obscurité est poissonnien. Par moindres
 carrés ordinaires sur les n_t temps :
 
 Î = Σ (t_i − t̄)(m_i − m̄) / S_xx,  S_xx = Σ (t_i − t̄)²,
@@ -2933,7 +2935,7 @@ valide, et un pixel qui sature dans l'obscurité est chaud par définition.
 ##### 4.2.3 Gain par le caractère poissonnien
 
 Sur les pixels ordinaires, la variance temporelle moyenne vaut, en DN²,
-v(t) = b + (Ī_e·t)/K², avec Ī_e = K·Ī le courant en e⁻/s. Sa pente en
+v(t) = a + (Ī_e·t)/K², avec Ī_e = K·Ī le courant en e⁻/s. Sa pente en
 fonction de t vaut donc Ī/K, et
 
 K = Ī / (dv/dt).
@@ -3258,8 +3260,8 @@ bloqués et 1 faux mort sans cette règle.
 élevé (queue log-normale) a une variance poissonnienne plus grande ;
 comparé à la médiane des variances, il passerait pour bruyant (16 cas
 sur 65 536 sans correction). Avec `dark_current` et `dark_exposure_time`,
-la variance attendue est donc b + a·I(p)·t, avec a = 1/K poissonnien. b
-s'obtient en résolvant médiane(s²_p / (b + a·d_p)) = médiane(χ²_{K−1})/
+la variance attendue est donc a + b·I(p)·t, avec b = 1/K poissonnien. a
+s'obtient en résolvant médiane(s²_p / (a + b·d_p)) = médiane(χ²_{K−1})/
 (K − 1), chaque pixel normalisé par sa propre variance attendue.
 
 **Biais de la médiane.** La médiane d'une variance empirique vaut
@@ -3475,7 +3477,7 @@ Liste des tests : annexe B, §B.9.
 
 Caractérisation **en vol** du bruit temporel d'une barrette push broom, à
 partir d'images de scènes peu texturées (`pushbroom_temporal_noise`), puis
-SNR aux niveaux spécifiés à partir de tout modèle σ² = a·μ + b
+SNR aux niveaux spécifiés à partir de tout modèle σ² = a + b·μ
 (`snr_model`).
 
 En vol, on ne dispose ni de paires de poses identiques ni de champs
@@ -3493,7 +3495,7 @@ l'allège :
 
 Objectifs :
 
-- estimer a et b du modèle σ² = a·μ + b, avec des incertitudes ;
+- estimer a et b du modèle σ² = a + b·μ, avec des incertitudes ;
 - **détecter** quand la scène viole les hypothèses, plutôt que de rendre
   silencieusement une valeur biaisée ;
 - en déduire le SNR à des niveaux spécifiés (L_min, L_ref, L_max…), avec
@@ -3529,7 +3531,7 @@ détecteurs voisins (paires pour p_⊥ = 1, triplets pour p_⊥ = 2) :
 - Le noyau étant normé, un bruit blanc de variance σ² garde la variance
   σ² au travers du filtre. La variance mesurée correspond à la moyenne des
   variances des détecteurs du groupe, pondérée par k². Comme σ²(μ) est
-  affine, elle vaut a·μ̄ + b, avec μ̄ le niveau moyen du groupe.
+  affine, elle vaut a + b·μ̄, avec μ̄ le niveau moyen du groupe.
 
 Les groupes étant disjoints, leurs sorties sont indépendantes. Le long de
 la trace, en revanche, les valeurs filtrées successives sont corrélées.
@@ -3613,25 +3615,25 @@ Ce rejet est **désactivé par défaut**, pour deux raisons :
 ##### 10.2.6 Ajustement σ²(μ)
 
 Chaque segment donne un couple (μ_s, s²_s) de variance 2σ⁴(μ_s)/ν. On
-ajuste σ² = a·μ + b par moindres carrés pondérés itératifs, avec des
-**poids tirés du modèle**, w_s = ν / (2·(a·μ_s + b)²). Pondérer par la
+ajuste σ² = a + b·μ par moindres carrés pondérés itératifs, avec des
+**poids tirés du modèle**, w_s = ν / (2·(a + b·μ_s)²). Pondérer par la
 variance mesurée, 1/s⁴, favoriserait les segments de faible s² et biaiserait
 le résultat vers le bas. Cinq itérations suffisent ; un plancher (5 % de
 la médiane des s²) protège les itérations initiales d'un modèle négatif.
 La covariance (XᵀWX)⁻¹ donne u(a) et u(b). Le χ² réduit contrôle le
 modèle.
 
-b est mal contraint par des scènes de 200 à 3 000 DN (±15 %). Si une
-obscurité est disponible, on l'impose (`b=dark.temporal_variance`) et
-seul a est ajusté.
+a est mal contraint par des scènes de 200 à 3 000 DN (±15 %). Si une
+obscurité est disponible, on l'impose (`a=dark.temporal_variance`) et
+seul b est ajusté.
 
 ##### 10.2.7 SNR et propagation
 
-SNR(μ) = μ / σ(μ), σ(μ) = √(a·μ + b). La jacobienne de σ par rapport à
-(a, b) vaut J = (μ/(2σ), 1/(2σ)), d'où u(σ)² = J·cov·Jᵀ et
-u(SNR) = SNR · u(σ)/σ. La covariance négative entre a et b (pente et
-ordonnée à l'origine) réduit u(σ) par rapport à une propagation qui
-l'ignorerait. Si b est imposé, il est tenu pour exact (cov 1 × 1 sur a).
+SNR(μ) = μ / σ(μ), σ(μ) = √(a + b·μ). La jacobienne de σ par rapport à
+(a, b) vaut J = (1/(2σ), μ/(2σ)), d'où u(σ)² = J·cov·Jᵀ et
+u(SNR) = SNR · u(σ)/σ. La covariance négative entre a et b (ordonnée à
+l'origine et pente) réduit u(σ) par rapport à une propagation qui
+l'ignorerait. Si a est imposé, il est tenu pour exact (cov 1 × 1 sur b).
 
 #### 10.3 Mise en œuvre
 
@@ -3706,16 +3708,16 @@ Recommandations :
   scène lisse (groupes plus nombreux) mais plus sensible à la texture.
   [2, 0] (détecteur par détecteur) n'est sûr que sur une scène uniforme ;
 - plusieurs images à des niveaux différents sont nécessaires pour
-  contraindre a. Le niveau de chaque segment suffit, sans avoir besoin de
+  contraindre b. Le niveau de chaque segment suffit, sans avoir besoin de
   niveaux annoncés.
 
 #### 10.4 Validation
 
-**Domaine de validité** (`examples/pushbroom_texture_bias_study.py`) : biais de a
-en unités de u(a) (≈ 0,2 % de a), pour 5 images de 1 024 × 513 à 200–3 000
+**Domaine de validité** (`examples/pushbroom_texture_bias_study.py`) : biais de b
+en unités de u(b) (≈ 0,2 % de b), pour 5 images de 1 024 × 513 à 200–3 000
 DN, gradient 10 % le long et 5 % en travers, PRNU entre détecteurs de 1 %.
 
-| β | c | σ_psf | (a − 1/K)/u [2,2] | (a − 1/K)/u [2,1] | (a − 1/K)/u [1,1] | (a − 1/K)/u [2,0] | cohérence [2,2] |
+| β | c | σ_psf | (b − 1/K)/u [2,2] | (b − 1/K)/u [2,1] | (b − 1/K)/u [1,1] | (b − 1/K)/u [2,0] | cohérence [2,2] |
 |---|---|---|---|---|---|---|---|
 | 3.0 | 0% | 0.0 | -0.3 | -0.1 | -0.3 | -0.1 | -1.4 u |
 | 3.0 | 3% | 0.0 | -1.2 | +0.5 | +1.3 | +1.9 | +2.4 u |
@@ -4345,6 +4347,17 @@ Corrections apportées pendant la mise au point, chapitre par chapitre : défaut
     bruit spatial ne valait que deux fois le temporel. Le test utilise une
     PRNU de 3 %.
 
+- 2026-11-18 : notation du modèle de bruit inversée, **σ² = a + b·μ** (a
+  plancher, b pente = 1/K), comme dans les autres modules EOQual et les
+  fichiers de configuration des chaînes de débruitage : un bruit
+  stationnaire s'écrit a = σ², b = 0. Méthodes et résultats inchangés ;
+  changement d'API : `PTCResult`, `PushbroomNoiseResult` et `SensorTruth`
+  portent a = plancher et b = pente, la covariance est ordonnée (a, b),
+  `measure_pushbroom_noise` impose le plancher par `a=` (et non plus `b=`),
+  `b_fixed` devient `a_fixed`, `add_noise(image, a, b)` prend le plancher
+  en `a`. Les entrées antérieures de cette annexe gardent l'ancienne
+  notation (a pente, b plancher).
+
 #### A.4 Courant d'obscurité (chapitre 4)
 
 - 2026-10-27 : création. La première version excluait de l'ajustement
@@ -4477,16 +4490,16 @@ Tests de validation de chaque métrique contre la vérité du simulateur. Toutes
 | Test | Vérifie |
 |---|---|
 | `test_offset_map` | carte d'offset à √(b/K) près ; offset moyen à 5 u |
-| `test_temporal_variance_is_b` | b̂ = b vrai |
+| `test_temporal_variance_is_a` | â = a vrai |
 | `test_dsnu_total` | DSNU = écart-type de la carte vraie, à 5 u(DSNU) |
 | `test_dsnu_decomposition` | σ_r, σ_c (5 u, formule du §2.7), σ_p à 1 %, profil des colonnes |
 | `test_stationary_stack`, `test_drift_is_detected` | rapport ≈ 1 et pente nulle ; dérive injectée de 0,02 DN/pose retrouvée, rapport > 10 |
-| `test_pushbroom_block` | bloc (400, 512) : DSNU entre détecteurs et b |
+| `test_pushbroom_block` | bloc (400, 512) : DSNU entre détecteurs et a |
 | `test_decomposition_exact_map` | carte sans bruit : composantes et total exacts |
-| `test_pair` (20, 1 000, 3 000 DN), `test_stack` | σ² = a·μ + b ; signal corrigé |
+| `test_pair` (20, 1 000, 3 000 DN), `test_stack` | σ² = a + b·μ ; signal corrigé |
 | `test_pair_removes_fixed_pattern` | PRNU 3 % : variance spatiale > 5 σ², paire exacte |
 | `test_pair_insensitive_to_level_shift` | écart additif de 7 DN entre poses : σ² inchangé |
-| `test_gain`, `test_read_noise` | K à 5 u et à 2 % ; σ_lect = 5 e⁻ à 5 u + 1 % ; b |
+| `test_gain`, `test_read_noise` | K à 5 u et à 2 % ; σ_lect = 5 e⁻ à 5 u + 1 % ; a |
 | `test_fit_quality` | χ² réduit à 5·√(2/ν) de 1 |
 | `test_saturation_excluded` | saturation du convertisseur détectée, niveaux > 70 % exclus |
 | `test_full_well_saturation` | puits à 6 000 e⁻ : point mesuré sur le plateau théorique de la variance tronquée |
@@ -4553,14 +4566,14 @@ Tests de validation de chaque métrique contre la vérité du simulateur. Toutes
 |---|---|
 | `test_null_statistics` (ordres 1 et 2) | écart-type de ρ₁ = Bartlett à 5 % ; Var(s²)·ν/(2σ⁴) = 1 à 5 % ; E[s²] = σ² |
 | `test_uniform_scene` | a et b à 5 u ; χ² réduit à 0,05 de 1 ; pas d'alerte ; aucun rejet |
-| `test_b_from_dark` | b imposé : u_b = 0, cov 1 × 1, a à 5 u |
-| `test_smooth_blurred_texture` | β = 3, c = 3 %, σ_psf = 0,6 : a à 5 u, pas d'alerte |
-| `test_rough_texture_is_flagged` | β = 2, c = 3 %, σ_psf = 0,6 : a surestimé et alerte levée |
+| `test_a_from_dark` | a imposé : u_a = 0, cov 1 × 1, b à 5 u |
+| `test_smooth_blurred_texture` | β = 3, c = 3 %, σ_psf = 0,6 : b à 5 u, pas d'alerte |
+| `test_rough_texture_is_flagged` | β = 2, c = 3 %, σ_psf = 0,6 : b surestimé et alerte levée |
 | `test_other_filters_on_uniform_scene` | filtres [1,1], [2,0], [2,1] sur scène uniforme |
 | `test_rejection_option`, `test_binned_summary`, `test_input_checks` | option de rejet, résumé par classes, contrôles d'entrée |
 | `test_snr_value` | SNR = vrai à 5 u à 30, 300, 3 000 DN |
 | `test_uncertainty_by_monte_carlo` | sur 150 PTC indépendantes, sd(SNR) = u(SNR) à 5/√(2(n − 1)) + 5 % |
-| `test_levels_in_electrons`, `test_fixed_b_model`, `test_input_checks` | unités, b imposé, contrôles |
+| `test_levels_in_electrons`, `test_fixed_a_model`, `test_input_checks` | unités, a imposé, contrôles |
 
 #### B.11 Bruit spatial fixe et bruit d'égalisation (chapitre 11)
 
@@ -4584,7 +4597,7 @@ Tests de validation de chaque métrique contre la vérité du simulateur. Toutes
 |---|---|
 | `test_white_noise_level` (Hann, sans fenêtre) | niveau σ² à 2 % ; variance ; u_nps/NPS = 1/√n à 20 % |
 | `test_filtered_noise_follows_transfer_function` | NPS = σ²·\|H\|² : rapport moyen à 2 %, 99 % des fréquences à 5 u |
-| `test_difference_mode_removes_fixed_pattern` | DSNU de 3 DN : variance du mode « différence » = b à 3 % |
+| `test_difference_mode_removes_fixed_pattern` | DSNU de 3 DN : variance du mode « différence » = a à 3 % |
 | `test_radial_and_cuts`, `test_mask_selects_patches` | moyenne radiale plate ; masque respecté |
 | `test_perdecomp_option` | option Moisan disponible, variance à 3 % |
 | `test_temporal_pattern`, `test_fixed_pattern` | fréquence, nature, amplitude (0,3 DN) et orientation |
@@ -4612,17 +4625,17 @@ Expressions de référence, par chapitre.
 | Signal en électrons | μ_e = η·μ_p·(1 + PRNU) | e⁻ |
 | Signal en DN au-dessus de l'offset | μ = μ_e / K | DN |
 | Moyenne d'un pixel | E[y] = offset + DSNU + μ | DN |
-| Variance temporelle | σ²(μ) = a·μ + b | DN² |
-| Pente | a = 1/K = K_E | DN/DN |
-| Variance à signal nul | b = (σ_lect² + σ_d²)/K² + 1/12 | DN² |
+| Variance temporelle | σ²(μ) = a + b·μ | DN² |
+| Variance à signal nul (plancher) | a = (σ_lect² + σ_d²)/K² + 1/12 | DN² |
+| Pente | b = 1/K = K_E | DN/DN |
 | Photons pour un signal s | μ_p = s·K/η | photons |
 | Bruit temporel par paire | σ_temp² = var(x₁ − x₂)/2 | DN² |
 | Bruit spatial corrigé | σ_spatial² = s²(moyenne de K poses) − σ_temp²/K | DN² |
 | Variance des moyennes de lignes | σ_r² + σ_p²/W | DN² |
 | Incertitude relative d'une variance | √(2/(n − 1)) | — |
-| SNR | μ / √(a·μ + b) | — |
+| SNR | μ / √(a + b·μ) | — |
 | Courant d'obscurité (S1) | d_e = I_d(T)·t_exp, I_d ∝ T³·exp(−E_g/2kT) | e⁻ |
-| TDI à N étages | μ_e = N·η·Φ·g ; σ² = a·μ + b inchangé | e⁻ |
+| TDI à N étages | μ_e = N·η·Φ·g ; σ² = a + b·μ inchangé | e⁻ |
 | FTM de la PSF gaussienne | exp(−2π²σ_psf²f²) | — |
 | Scène naturelle | Φ₀·(1 + g_∥u + g_⊥v)·(1 + c·T) | photons |
 | Motif périodique | A·cos(2π(f_x j + f_y i) + φ), variance A²/2 | DN |
@@ -4639,13 +4652,13 @@ Expressions de référence, par chapitre.
 | Grandeur | Expression |
 |---|---|
 | Carte d'offset | ô = (1/K) Σ_k y_k |
-| b | b̂ = moyenne_ij [(1/(K − 1)) Σ_k (y_k − ô)²] ; u = b̂·√(2/((K − 1)N)) |
-| DSNU | √(var(ô) − b̂/K) ; u² ≈ [4·DSNU²·v + 2v²(1 + 1/(K − 1))]/N / (4·DSNU²), v = b̂/K |
+| a | â = moyenne_ij [(1/(K − 1)) Σ_k (y_k − ô)²] ; u = â·√(2/((K − 1)N)) |
+| DSNU | √(var(ô) − â/K) ; u² ≈ [4·DSNU²·v + 2v²(1 + 1/(K − 1))]/N / (4·DSNU²), v = â/K |
 | Composantes | s²_pe = var(P)·HW/((H − 1)(W − 1)) ; σ_r² = var(R) − (s²_pe/W)(H − 1)/H ; σ_p² = s²_pe − v |
-| Stationnarité | var(f)/(b̂/N) ≈ 1 ± √(2/(K − 1)) |
+| Stationnarité | var(f)/(â/N) ≈ 1 ± √(2/(K − 1)) |
 | Bruit temporel (paire) | σ² = var(x₁ − x₂)/2 ; u = σ²·√(2/(N − 1)) |
-| PTC | σ² = a·μ + b ; K = 1/a ; u(K) = u(a)/a² |
-| Bruit de lecture | σ_lect = K·√(b − 1/12) |
+| PTC | σ² = a + b·μ ; K = 1/b ; u(K) = u(b)/b² |
+| Bruit de lecture | σ_lect = K·√(a − 1/12) |
 | Saturation (puits) | pic de variance vers FW − 2,8√FW |
 | Linéarité | LE = (max δ − min δ)/2, δ = (μ − (s·x + c))/(s·x + c) en % |
 
@@ -4654,7 +4667,7 @@ Expressions de référence, par chapitre.
 | Grandeur | Expression |
 |---|---|
 | Courant par pixel | Î = Σ (t_i − t̄)(m_i − m̄)/S_xx ; Var(Î) = Σ (t_i − t̄)²·v_i/K_i / S_xx² |
-| Variance temporelle | v(t) = b + I·t/K (DN²) |
+| Variance temporelle | v(t) = a + I·t/K (DN²) |
 | Gain poissonnien | K = Ī / (dv/dt) |
 | DSNU du courant | √(var(Î) − mean Var(Î)) |
 | Loi en température | ln I − 3 ln(T/T₀) = ln I₀ − (E_g/2k)(1/T − 1/T₀) |
@@ -4669,10 +4682,10 @@ Expressions de référence, par chapitre.
 | Degrés de liberté effectifs | ν = n / Σ_k ρ_k² (ordre 1 : n/1,5 ; ordre 2 : n/1,944) |
 | Variance d'un segment | s² = mean(f²) ; Var(s²) = 2σ⁴/ν |
 | Transmission de la scène | ∫ P_scène(f)·FTM²(f)·\|H(f)\|² df |
-| Poids de l'ajustement | w = ν / (2·(a·μ + b)²) |
+| Poids de l'ajustement | w = ν / (2·(a + b·μ)²) |
 | Cohérence | R = mean(s²_contrôle)/mean(s²) ; u(R) = sd(x − R·y)/(√n·ȳ) ; alerte si \|R − 1\| > 5 u |
 | Bartlett, retard 1 | Var(r₁) = Σ_{k≥1} (ρ_{k+1} + ρ_{k−1} − 2ρ₁ρ_k)² / n |
-| SNR | μ/√(a·μ + b) ; u(σ)² = J·cov·Jᵀ, J = (μ/2σ, 1/2σ) |
+| SNR | μ/√(a + b·μ) ; u(σ)² = J·cov·Jᵀ, J = (1/2σ, μ/2σ) |
 
 #### C.11 Bruit spatial et égalisation (chapitre 11)
 
@@ -4837,7 +4850,7 @@ Une mesure de bruit ne se valide pas sur des images réelles, dont on ne
 connaît pas la vérité. Les mesures radiométriques se valident donc sur
 un simulateur, comme la MTF d'eoqual-measure se valide sur
 `SyntheticSlantedEdge` et le Strehl sur `SyntheticPSF`. Le `synthetic.noise`
-d'eoqual-measure ne fait qu'ajouter un bruit σ²(I) = a·I + b à une image :
+d'eoqual-measure ne fait qu'ajouter un bruit σ²(I) = a + b·I à une image :
 il ne produit ni piles temporelles, ni motifs fixes, ni capteur dont on
 puisse séparer les composantes.
 
@@ -4912,8 +4925,8 @@ successivement le même point de la scène, et la charge est transférée au
 rythme du défilement, ce qui l'accumule sur N étages avant une lecture
 unique. Pour Φ photons par étage, μ_e = N·η·Φ·g. Le bruit de photons suit
 le signal accumulé (variance μ_e) alors que le bruit de lecture n'est
-compté qu'une fois. Le modèle σ² = a·μ + b est donc inchangé, avec a = 1/K
-et b = (σ_lect/K)² + 1/12, mais le SNR à flux égal gagne un facteur ≈ √N
+compté qu'une fois. Le modèle σ² = a + b·μ est donc inchangé, avec
+a = (σ_lect/K)² + 1/12 et b = 1/K, mais le SNR à flux égal gagne un facteur ≈ √N
 quand le bruit de photons domine.
 
 #### 2.4 Scènes naturelles et optique (S2)
@@ -4946,7 +4959,7 @@ qu'elle ne soit pas périodique (la synthèse par FFT l'est).
 
 Le bruit des parties I à IV est **non corrélé** entre pixels. Une
 électronique réelle ajoute des composantes corrélées, qui ne relèvent
-pas du modèle σ² = a·μ + b :
+pas du modèle σ² = a + b·μ :
 
 - **bruit de ligne** : un offset commun à tous les pixels d'une ligne,
   tiré à chaque lecture (référence ou alimentation de l'amplificateur,
@@ -5124,7 +5137,7 @@ Principes :
 2. PRNU : de même, avec l'étiquette `"prnu"`, sans unité. Le capteur est
    refusé si 1 + PRNU ≤ 0 sur un pixel.
 3. Vérité : `offset_map = offset + DSNU`, `gain_map = 1 + PRNU`,
-   a = 1/K, b = (σ_lect/K)² + 1/12, `saturation_dn` = 2ⁿ − 1.
+   a = (σ_lect/K)² + 1/12, b = 1/K, `saturation_dn` = 2ⁿ − 1.
 
 `structured_map` tire les trois composantes gaussiennes et **centre**
 chacune d'elles (moyenne spatiale nulle). L'offset moyen et le gain moyen
@@ -5422,7 +5435,7 @@ for s in $(seq 0 29); do EOQUAL_TEST_SEED=$s .venv/bin/python -m pytest -q | tai
 | `dsnu_pixel` / `dsnu_row` / `dsnu_col` | 0,5 / 0 / 0,3 | DN |
 | `prnu_pixel` / `prnu_row` / `prnu_col` | 0,5 % / 0 / 0,2 % | — |
 
-Grandeurs dérivées : a = 0,333 ; b = 2,86 DN² (σ_lect = 1,67 DN) ;
+Grandeurs dérivées : a = 2,86 DN² (σ_lect = 1,67 DN) ; b = 0,333 ;
 saturation du convertisseur à 4 095 DN, avant le puits (5 100 DN).
 
 ### 6. Validation
@@ -5438,20 +5451,20 @@ déduite de l'incertitude statistique de l'estimateur (partie IV, §2.6), en gé
 | `test_fixed_pattern_does_not_depend_on_other_patterns` | séparation des flux aléatoires |
 | `test_maps_are_centred` | offset moyen et gain moyen exacts |
 | `test_component_amplitudes` | σ_p, σ_r, σ_c de la DSNU et de la PRNU, à 5/√(2(n−1)) près |
-| `test_dark_stack_mean_and_variance` | moyenne temporelle = carte d'offset, à √(b/K) ; variance = b |
-| `test_flat_mean_and_variance` (50, 500, 2 500 DN) | E[y] et Var[y] = a·μ + b |
+| `test_dark_stack_mean_and_variance` | moyenne temporelle = carte d'offset, à √(a/K) ; variance = a |
+| `test_flat_mean_and_variance` (50, 500, 2 500 DN) | E[y] et Var[y] = a + b·μ |
 | `test_photon_transfer_slope_is_one_over_gain` | pente de la PTC par paires = 1/K à 2 % |
-| `test_adc_saturation`, `test_full_well_clipping` | plafonds ; variance réduite à b au plateau du puits |
+| `test_adc_saturation`, `test_full_well_clipping` | plafonds ; variance réduite à a au plateau du puits |
 | `test_output_format`, `test_scene_map_input` | type `uint16`, forme, contrôles d'entrée |
 | `test_power_law_1d_slope`, `test_power_law_2d_radial_slope` | pente spectrale −β à 0,1 près |
 | `test_power_law_normalised` | moyenne 0, écart-type 1 |
-| `test_detector_statistics` (push broom) | moyenne par détecteur = offset + μ·g ; variance = a·μ + b |
+| `test_detector_statistics` (push broom) | moyenne par détecteur = offset + μ·g ; variance = a + b·μ |
 | `test_lines_are_independent` | autocorrélation le long de la trace nulle à 5/√n près |
-| `test_tdi` (N = 1, 4, 16) | signal ×N à flux par étage égal ; variance = a·μ + b |
+| `test_tdi` (N = 1, 4, 16) | signal ×N à flux par étage égal ; variance = a + b·μ |
 | `test_natural_scene_components`, `test_scene_not_periodic` | texture normée, gradient exact, texture non périodique |
 | `test_scene_psf_attenuates_high_frequencies` | spectre 2D de la texture × FTM² exactement (champ périodique) |
 | `test_effects_off_by_default` | S3 désactivé par défaut |
-| `test_row_noise` (β = 0 et 1) | moyennes de lignes = offsets réalisés à √(b/W) près ; variance temporelle = b + variance par ligne des offsets |
+| `test_row_noise` (β = 0 et 1) | moyennes de lignes = offsets réalisés à √(a/W) près ; variance temporelle = a + variance par ligne des offsets |
 | `test_row_noise_spectrum` | pente −1 à 0,15 près pour β = 1 |
 | `test_periodic_temporal_and_fixed` | amplitude projetée exacte, phase variable (temporel) ou constante (fixe) |
 | `test_cosmic_rays` | charge/K sur les pixels touchés ; écrêtage au puits |
@@ -5459,7 +5472,7 @@ déduite de l'incertitude statistique de l'estimateur (partie IV, §2.6), en gé
 | `test_apply_kernel_nps` | NPS moyen = σ²·\|H\|² ; variance σ²·Σh² ; noyau centré |
 | `test_s3_params_validation` | contrôles d'entrée |
 | `test_off_by_default` (S1) | sans courant, le temps de pose est sans effet |
-| `test_dark_mean_and_poisson_variance` | moyenne = offset + d_e/K ; variance = b + d_e/K² |
+| `test_dark_mean_and_poisson_variance` | moyenne = offset + d_e/K ; variance = a + d_e/K² |
 | `test_dark_linear_in_exposure_time` | pente = courant moyen / K à 1 % |
 | `test_temperature_law` | doublement exact 8,29 K à 20 °C |
 | `test_lognormal_map_and_hot_pixels` | moyenne 1, DSNU √(e^{s²} − 1), nombre et facteurs (log-uniformes) des pixels chauds |
@@ -5468,7 +5481,7 @@ déduite de l'incertitude statistique de l'estimateur (partie IV, §2.6), en gé
 | `test_pushbroom_dark_and_drift`, `test_s1_validation` | push broom ; contrôles d'entrée |
 | `test_transmission` (S4) | vignettage 1 − v aux coins ; poussières dans [(1 − d)ⁿ, 1 − 0,07] ; flat moyen = T·g |
 | `test_nonlinearity_mean_and_variance` (500, 3 000 DN) | moyenne (terme de Poisson) et variance comprimée ; compression visible ; dispersion de β |
-| `test_dead_and_stuck_pixels` | nombres exacts, ensembles disjoints ; morts à l'offset avec variance b ; bloqués constants |
+| `test_dead_and_stuck_pixels` | nombres exacts, ensembles disjoints ; morts à l'offset avec variance a ; bloqués constants |
 | `test_pushbroom_response_effects`, `test_s4_validation` | effets en push broom ; contrôles d'entrée |
 | `test_rts_levels_and_rates` | écart des niveaux = amplitude ; fréquences de bascule à 5/√n ; fraction haute stationnaire |
 | `test_rts_pushbroom_along_lines` | chaîne de Markov le long de la trace |
@@ -5485,7 +5498,7 @@ Robustesse : les 62 tests passent pour 30 décalages de graine
 
 **Limites du modèle**
 
-- *Quantification* : le terme 1/12 de b suppose σ_lect/K ≳ 0,5 DN. Pour
+- *Quantification* : le terme 1/12 de a suppose σ_lect/K ≳ 0,5 DN. Pour
   un capteur à très faible bruit (σ < 0,5 DN), la variance réelle dépend
   de la position de l'offset entre deux codes. Le simulateur reste exact
   (il arrondit vraiment), mais `truth.b` n'est plus qu'une approximation.
@@ -5529,7 +5542,7 @@ dans `docs/SOURCES.md`)
 | Poisson du courant d'obscurité tiré en DN (`poisson(I_d·t/K)`) | variance fausse d'un facteur K | tout tirage de Poisson en électrons |
 | Arrondi des électrons après application de η, et du bruit de lecture | discrétisation parasite avant le convertisseur | Poisson(η·μ_p) direct, seul arrondi au convertisseur |
 | Conversion par `astype(int16)` | troncature au lieu d'arrondi, repli des valeurs négatives | `floor(y + 0.5)` puis écrêtage à [0, 2ⁿ − 1], `uint16` |
-| Deux gains incohérents (5,88 DN/e⁻ et 1 e⁻/DN) | modèle de bruit inexploitable | un seul K (e⁻/DN), a = 1/K |
+| Deux gains incohérents (5,88 DN/e⁻ et 1 e⁻/DN) | modèle de bruit inexploitable | un seul K (e⁻/DN), b = 1/K |
 | Mauvaises colonnes multipliant l'image finale en DN | l'offset est lui aussi multiplié | colonne = offset (DSNU) ou gain du signal (PRNU) |
 | Motifs fixes et bruit temporel tirés du même générateur | ajouter un effet change tous les tirages | un flux par motif, nommé par étiquette |
 
@@ -5540,17 +5553,17 @@ dans `docs/SOURCES.md`)
 | Signal en électrons | μ_e = η·μ_p·(1 + PRNU) | e⁻ |
 | Signal en DN au-dessus de l'offset | μ = μ_e / K | DN |
 | Moyenne d'un pixel | E[y] = offset + DSNU + μ | DN |
-| Variance temporelle | σ²(μ) = a·μ + b | DN² |
-| Pente | a = 1/K = K_E | DN/DN |
-| Variance à signal nul | b = (σ_lect² + σ_d²)/K² + 1/12 | DN² |
+| Variance temporelle | σ²(μ) = a + b·μ | DN² |
+| Variance à signal nul (plancher) | a = (σ_lect² + σ_d²)/K² + 1/12 | DN² |
+| Pente | b = 1/K = K_E | DN/DN |
 | Photons pour un signal s | μ_p = s·K/η | photons |
 | Bruit temporel par paire | σ_temp² = var(x₁ − x₂)/2 | DN² |
 | Bruit spatial corrigé | σ_spatial² = s²(moyenne de K poses) − σ_temp²/K | DN² |
 | Variance des moyennes de lignes | σ_r² + σ_p²/W | DN² |
 | Incertitude relative d'une variance | √(2/(n − 1)) | — |
-| SNR | μ / √(a·μ + b) | — |
+| SNR | μ / √(a + b·μ) | — |
 | Courant d'obscurité (S1) | d_e = I_d(T)·t_exp, I_d ∝ T³·exp(−E_g/2kT) | e⁻ |
-| TDI à N étages | μ_e = N·η·Φ·g ; σ² = a·μ + b inchangé | e⁻ |
+| TDI à N étages | μ_e = N·η·Φ·g ; σ² = a + b·μ inchangé | e⁻ |
 | FTM de la PSF gaussienne | exp(−2π²σ_psf²f²) | — |
 | Scène naturelle | Φ₀·(1 + g_∥u + g_⊥v)·(1 + c·T) | photons |
 | Motif périodique | A·cos(2π(f_x j + f_y i) + φ), variance A²/2 | DN |
@@ -5604,6 +5617,9 @@ modifier les cartes des étapes précédentes (§4.3).
 
 ### Annexe A. Historique des corrections
 
+- 2026-11-18 : `SensorTruth.a` est le plancher (σ_lect/K)² + 1/12 et
+  `SensorTruth.b` la pente 1/K (notation σ² = a + b·μ, partie IV, annexe A,
+  §A.3). Les entrées antérieures gardent l'ancienne notation.
 - 2026-10-26 : création de S0. La capacité du puits par défaut passe de
   12 000 à 15 000 e⁻ : avec 12 000 e⁻, le plateau du puits
   (4 000 + 100 DN) tombait au niveau du code maximal (4 095 DN), et les

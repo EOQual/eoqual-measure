@@ -48,8 +48,8 @@ def add_noise(
     bit_depth: Optional[int] = None,
 ) -> NDArray[np.float32]:
     """
-    Ajoute un bruit gaussien de variance σ²(I) = a·I + b à une image
-    (a=0 pour un bruit homoscédastique de variance constante b).
+    Ajoute un bruit gaussien de variance σ²(I) = a + b·I à une image
+    (b=0 pour un bruit homoscédastique de variance constante a = σ²).
 
     Si `bit_depth` est fourni, l'image bruitée est en plus quantifiée et
     écrêtée sur la plage [0, 2^bit_depth - 1], reproduisant les effets non
@@ -66,9 +66,9 @@ def add_noise(
     image : NDArray[np.float32]
         Image 2D d'entrée, sans bruit.
     a : float
-        Pente du modèle de bruit (composante de type Poisson, dépendante du signal).
+        Ordonnée à l'origine du modèle de bruit, plancher (bruit de lecture, indépendant du signal).
     b : float
-        Ordonnée à l'origine du modèle de bruit (bruit de lecture, indépendant du signal).
+        Pente du modèle de bruit (composante de type Poisson, dépendante du signal).
     seed : int
         Graine du générateur aléatoire, pour reproductibilité.
     bit_depth : int ou None
@@ -84,7 +84,7 @@ def add_noise(
     """
 
     rng = np.random.default_rng(seed)
-    local_variance = np.clip(a * image.astype(np.float64) + b, a_min=1e-6, a_max=None)
+    local_variance = np.clip(a + b * image.astype(np.float64), a_min=1e-6, a_max=None)
     noise = rng.normal(0.0, np.sqrt(local_variance))
     noisy = image.astype(np.float64) + noise
 

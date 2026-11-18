@@ -80,7 +80,7 @@ MEASURES_CONFIGS: OrderedDict = OrderedDict(
             "family": "radiometry",
             "status": "available",
             "input": "Images push broom (M, W) de scènes peu texturées à plusieurs niveaux (+ obscurité)",
-            "outputs": "Modèle de bruit temporel sigma²(mu) = a·mu + b, diagnostic de texture résiduelle",
+            "outputs": "Modèle de bruit temporel sigma²(mu) = a + b·mu, diagnostic de texture résiduelle",
             "entry": "eoqual.measure.radiometry:measure_pushbroom_noise",
             "builds_on": ["dark_frame"],
             "reference": "Immerkær (1996), CVIU 64(2), 300-302",

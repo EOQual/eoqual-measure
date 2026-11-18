@@ -24,7 +24,7 @@ TOLERANCES = {
 
 @pytest.fixture(scope="module")
 def noisy():
-    return add_noise(generate_clean_image((256, 256)), a=0.0, b=TRUE_VARIANCE, seed=2)
+    return add_noise(generate_clean_image((256, 256)), a=TRUE_VARIANCE, b=0.0, seed=2)
 
 
 def test_registry_lists_all_methods():
@@ -41,7 +41,7 @@ def test_variance_recovered(noisy, method):
 
 
 def test_ponomarenko_noise_curve_slope():
-    image = add_noise(generate_clean_image((256, 256)), a=0.5, b=5.0, seed=2)
+    image = add_noise(generate_clean_image((256, 256)), a=5.0, b=0.5, seed=2)
     est = estimate_noise(image, "ponomarenko", num_bins=5, overlap=4)
     assert len(est.variance) == len(est.mean) == len(est.samples) == 5
     assert np.all(np.diff(est.mean) > 0)

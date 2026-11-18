@@ -149,26 +149,26 @@ def map_defective_pixels(
     stuck &= ~hot                       # un pixel chaud saturé sort un code constant
 
     # Bruyants : variance d'obscurité au-dessus du quantile 1 − p_FA de la
-    # variance attendue : b + a·I·t par pixel (bruit d'obscurité poissonnien),
+    # variance attendue : a + b·I·t par pixel (bruit d'obscurité poissonnien),
     # ou la médiane des variances à défaut.
     kd = dk.shape[0]
     var_d = dk.var(axis=0, ddof=1)
     noisy_thr = float(stats.chi2.isf(false_alarm, kd - 1) / (kd - 1))
     if dark_current is not None and dark_exposure_time is not None and dark_current.poisson_gain:
-        a = 1.0 / dark_current.poisson_gain
+        b = 1.0 / dark_current.poisson_gain
         dark_dn = np.nan_to_num(np.clip(dark_current.current_map, 0, None)) * dark_exposure_time
         ordinary = ~hot & ~stuck
-        # b tel que R = var / (b + a·d) ait la médiane de χ²_{K−1}/(K−1) :
+        # a tel que R = var / (a + b·d) ait la médiane de χ²_{K−1}/(K−1) :
         # chaque pixel normalisé par sa propre variance attendue.
         from scipy.optimize import brentq
 
         vv, dd = var_d[ordinary], dark_dn[ordinary]
         target = median_scale(kd)
-        def gap(bb):
-            return float(np.median(vv / (bb + a * dd))) - target
-        hi_b = float(np.median(vv)) * 10 + 1.0
-        b = brentq(gap, 1e-9, hi_b) if gap(1e-9) > 0 > gap(hi_b) else float(np.median(vv)) / target
-        expected = b + a * dark_dn
+        def gap(aa):
+            return float(np.median(vv / (aa + b * dd))) - target
+        hi_a = float(np.median(vv)) * 10 + 1.0
+        a = brentq(gap, 1e-9, hi_a) if gap(1e-9) > 0 > gap(hi_a) else float(np.median(vv)) / target
+        expected = a + b * dark_dn
     else:
         expected = np.full(shape, float(np.median(var_d)) / median_scale(kd))
     noisy = (var_d > noisy_thr * expected) & ~hot & ~stuck

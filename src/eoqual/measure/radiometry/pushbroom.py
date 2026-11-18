@@ -87,10 +87,11 @@ class PushbroomNoiseResult:
         Segments retenus (signal > 0, et autocorrélation sous le seuil si
         `rho_threshold` est fourni).
     a, b, cov, u_a, u_b :
-        Ajustement pondéré σ² = a·μ + b et incertitudes ; si b est imposé,
-        u_b = 0 et la covariance ne porte que sur a.
-    b_fixed :
-        Vrai si b a été imposé (par exemple par `dark_frame`).
+        Ajustement pondéré σ² = a + b·μ (a plancher, b pente) et
+        incertitudes ; covariance dans l'ordre (a, b). Si a est imposé,
+        u_a = 0 et la covariance ne porte que sur b.
+    a_fixed :
+        Vrai si a a été imposé (par exemple par `dark_frame`).
     reduced_chi2 :
         χ² réduit de l'ajustement (≈ 1 si le modèle tient).
     rejected_fraction :
@@ -118,7 +119,7 @@ class PushbroomNoiseResult:
     cov: NDArray[np.float64]
     u_a: float
     u_b: float
-    b_fixed: bool
+    a_fixed: bool
     reduced_chi2: float
     rejected_fraction: float
     consistency: float
@@ -134,8 +135,8 @@ class PushbroomNoiseResult:
         return bool(abs(self.consistency - 1.0) > 5.0 * self.u_consistency)
 
     def sigma(self, mu: ArrayLike) -> NDArray[np.float64]:
-        """Bruit temporel modélisé σ(μ) = √(a·μ + b) (DN)."""
-        return np.sqrt(self.a * np.asarray(mu, dtype=np.float64) + self.b)
+        """Bruit temporel modélisé σ(μ) = √(a + b·μ) (DN)."""
+        return np.sqrt(self.a + self.b * np.asarray(mu, dtype=np.float64))
 
     def binned(self, n_bins: int = 10) -> tuple[NDArray[np.float64], NDArray[np.float64], NDArray[np.float64]]:
         """
@@ -208,33 +209,34 @@ def _filtered_segments(image: NDArray[np.float64], length: int, along: int, acro
     return level.ravel(), var.ravel(), rho.ravel(), var_ctrl.ravel(), idx.ravel(), f.shape[1]
 
 
-def _fit(mu, var, dof, b_value=None, n_iter=5):
+def _fit(mu, var, dof, a_value=None, n_iter=5):
     """
-    Moindres carrés pondérés itératifs, poids tirés du modèle.
+    Moindres carrés pondérés itératifs de σ² = a + b·μ, poids tirés du modèle.
 
     Var(s²) = 2σ⁴/ν : pondérer par la variance mesurée favoriserait les
     segments de faible s² (biais vers le bas) ; on pondère par le modèle.
+    Covariance dans l'ordre (a, b), ou 1 × 1 sur b si a est imposé.
     """
     floor = 0.05 * float(np.median(var))     # garde-fou : modèle provisoire ≤ 0
-    if b_value is None:
-        design = np.column_stack([mu, np.ones_like(mu)])
+    if a_value is None:
+        design = np.column_stack([np.ones_like(mu), mu])
         a, b = np.linalg.lstsq(design, var, rcond=None)[0]
     else:
-        a = float(np.sum(mu * (var - b_value)) / np.sum(mu**2))
-        b = b_value
+        a = a_value
+        b = float(np.sum(mu * (var - a_value)) / np.sum(mu**2))
     for _ in range(n_iter):
-        model = np.maximum(a * mu + b, floor)
+        model = np.maximum(a + b * mu, floor)
         w = dof / (2.0 * model**2)
-        if b_value is None:
-            design = np.column_stack([mu, np.ones_like(mu)])
+        if a_value is None:
+            design = np.column_stack([np.ones_like(mu), mu])
             cov = np.linalg.inv(design.T @ (design * w[:, None]))
             a, b = cov @ (design.T @ (w * var))
         else:
             cov = np.array([[1.0 / np.sum(w * mu**2)]])
-            a = float(cov[0, 0] * np.sum(w * mu * (var - b_value)))
-    model = np.maximum(a * mu + b, floor)
+            b = float(cov[0, 0] * np.sum(w * mu * (var - a_value)))
+    model = np.maximum(a + b * mu, floor)
     w = dof / (2.0 * model**2)
-    n_par = 2 if b_value is None else 1
+    n_par = 2 if a_value is None else 1
     chi2 = float(np.sum(w * (var - model) ** 2) / max(len(mu) - n_par, 1))
     return float(a), float(b), cov, chi2
 
@@ -247,10 +249,10 @@ def measure_pushbroom_noise(
     along_order: int = 2,
     across_order: int = 2,
     rho_threshold: float | None = None,
-    b: float | None = None,
+    a: float | None = None,
 ) -> PushbroomNoiseResult:
     """
-    Mesure le modèle de bruit temporel σ²(μ) = a·μ + b d'un push broom.
+    Mesure le modèle de bruit temporel σ²(μ) = a + b·μ d'un push broom.
 
     Parameters
     ----------
@@ -274,9 +276,9 @@ def measure_pushbroom_noise(
         l'autocorrélation et la variance du segment sont corrélées
         (≈ −0,45), et le rejet biaise σ² vers le haut (+0,5 % pour 3 σ) sans
         presque rien retirer de la texture.
-    b :
-        Variance à signal nul imposée (DN²), par exemple
-        `dark_result.temporal_variance` ; sinon b est ajusté.
+    a :
+        Variance à signal nul imposée (plancher, DN²), par exemple
+        `dark_result.temporal_variance` ; sinon a est ajusté.
 
     Notes
     -----
@@ -316,7 +318,7 @@ def measure_pushbroom_noise(
         raise ValueError("moins de trois segments exploitables")
 
     dof = effective_dof(n_out, along_order)
-    a, b_fit, cov, chi2 = _fit(mu[used], var[used], dof, b_value=b)
+    a_fit, b, cov, chi2 = _fit(mu[used], var[used], dof, a_value=a)
 
     # Cohérence : rapport des moyennes (filtre de contrôle / filtre choisi), méthode delta.
     x, y = var_ctrl[used], var[used]
@@ -334,12 +336,12 @@ def measure_pushbroom_noise(
         segment_group=grp.astype(np.int64),
         segment_image=img_idx.astype(np.int64),
         used=used,
-        a=a,
-        b=b_fit,
+        a=a_fit,
+        b=b,
         cov=cov,
-        u_a=float(np.sqrt(cov[0, 0])),
-        u_b=0.0 if b is not None else float(np.sqrt(cov[1, 1])),
-        b_fixed=b is not None,
+        u_a=0.0 if a is not None else float(np.sqrt(cov[0, 0])),
+        u_b=float(np.sqrt(cov[0, 0] if a is not None else cov[1, 1])),
+        a_fixed=a is not None,
         reduced_chi2=chi2,
         rejected_fraction=float(1.0 - used.mean()),
         consistency=ratio,

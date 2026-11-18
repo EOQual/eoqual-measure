@@ -39,15 +39,15 @@ def test_row_noise(beta):
     assert acq.row_offsets.std() == pytest.approx(2.0)
     resid = (acq.frames - t.offset_map).mean(axis=2)                 # moyennes de lignes, par pose
     err = resid - acq.row_offsets
-    assert err.std() == pytest.approx(np.sqrt(t.b / w), rel=0.05)
+    assert err.std() == pytest.approx(np.sqrt(t.a / w), rel=0.05)
     # Variance temporelle par pixel = b + variance, d'une pose à l'autre, de l'offset de sa ligne
     # (exacte pour la réalisation ; en 1/f, plus petite que σ_ligne² : la part basse fréquence
     # varie peu entre poses voisines).
     var = acq.frames.astype(float).var(axis=0, ddof=1).mean()
-    expected = t.b + acq.row_offsets.var(axis=0, ddof=1).mean()
+    expected = t.a + acq.row_offsets.var(axis=0, ddof=1).mean()
     assert var == pytest.approx(expected, rel=5 * np.sqrt(2 / ((k - 1) * h * w)) + 0.01)
     if beta == 0:
-        assert expected == pytest.approx(t.b + t.correlated_variance, rel=5 * np.sqrt(2 / (k * h)))
+        assert expected == pytest.approx(t.a + t.correlated_variance, rel=5 * np.sqrt(2 / (k * h)))
 
 
 def test_row_noise_spectrum():
@@ -68,7 +68,7 @@ def test_periodic_temporal_and_fixed():
         # Projection sur le motif 1 : amplitude 3 quelle que soit la phase.
         c = np.mean(x * np.cos(2 * np.pi * 0.125 * j)) * 2
         sn = np.mean(x * np.sin(2 * np.pi * 0.125 * j)) * 2
-        assert np.hypot(c, sn) == pytest.approx(3.0, abs=5 * np.sqrt(2 * t.b / x.size) * 2)
+        assert np.hypot(c, sn) == pytest.approx(3.0, abs=5 * np.sqrt(2 * t.a / x.size) * 2)
     phases = [np.angle(np.sum(acq.periodic[f] * np.exp(-2j * np.pi * 0.125 * j))) for f in range(8)]
     assert np.std(np.unwrap(phases)) > 0.3                           # phase temporelle
     # Motif fixe : sa projection est identique d'une pose à l'autre (le motif temporel, orthogonal
@@ -102,7 +102,7 @@ def test_pushbroom_line_noise():
     acq = pb.dark(n_lines=2000, seed=6)
     assert acq.line_offsets.shape == (2000,)
     err = (acq.image - t.detector_offset).mean(axis=1) - acq.line_offsets
-    assert err.std() == pytest.approx(np.sqrt(t.b / 512), rel=0.05)
+    assert err.std() == pytest.approx(np.sqrt(t.a / 512), rel=0.05)
 
 
 def test_apply_kernel_nps():

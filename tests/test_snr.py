@@ -20,7 +20,7 @@ def _ptc(sensor, seed0):
 def test_snr_value(sensor):
     t = sensor.truth
     r = snr_at_levels(_ptc(sensor, 10), LEVELS)
-    true_snr = np.array(LEVELS) / np.sqrt(t.a * np.array(LEVELS) + t.b)
+    true_snr = np.array(LEVELS) / np.sqrt(t.b * np.array(LEVELS) + t.a)
     assert np.all(np.abs(r.snr - true_snr) < 5 * r.u_snr)
 
 
@@ -46,9 +46,9 @@ def test_levels_in_electrons(sensor):
     assert r_e.snr[0] == pytest.approx(r_dn.snr[0])
 
 
-def test_fixed_b_model():
+def test_fixed_a_model():
     class Model:
-        a, b, cov = 0.5, 4.0, np.array([[1e-6]])
+        a, b, cov = 4.0, 0.5, np.array([[1e-6]])    # a imposé : covariance sur b seul
     r = snr_at_levels(Model(), [100.0])
     assert r.snr[0] == pytest.approx(100 / np.sqrt(54))
     assert r.u_sigma[0] == pytest.approx(100 / (2 * np.sqrt(54)) * 1e-3)

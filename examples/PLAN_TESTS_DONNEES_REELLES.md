@@ -99,7 +99,7 @@ indicatifs : un écart est d'abord analysé.
 - **C3** : DSNU et ses composantes ligne et colonne, répétables entre deux
   piles. Un colonnage marqué est attendu sur les CMOS à convertisseurs de
   colonne.
-- **C4** : σ₀ = √b comparé au bruit de lecture annoncé, converti en DN
+- **C4** : σ₀ = √a comparé au bruit de lecture annoncé, converti en DN
   avec le gain de la PTC.
 - **Pièges** : pixels chauds qui gonflent la DSNU (les exclure via
   `defective_pixels`), bruit de ligne qui fausse le rapport de
@@ -210,8 +210,8 @@ indicatifs : un écart est d'abord analysé.
 
 - **C1** : `texture_suspected` faux sur les sites retenus. Sinon, changer
   de site ou de zone plutôt que d'interpréter la mesure.
-- **C2** : pente a cohérente entre sites et dates, à 3 u près.
-- **C3** : avec b tiré de P1, a = 1/K comparé au gain de la PTC au sol,
+- **C2** : pente b cohérente entre sites et dates, à 3 u près.
+- **C3** : avec a tiré de P1, b = 1/K comparé au gain de la PTC au sol,
   si l'on dispose de la caractérisation au sol du même instrument.
 - **C4** : SNR aux niveaux spécifiés (L_min, L_ref, L_max) comparé aux
   spécifications de l'instrument.
@@ -264,9 +264,9 @@ indicatifs : un écart est d'abord analysé.
 
 | Grandeur | Voie 1 | Voie 2 | Voie 3 |
 |---|---|---|---|
-| Gain K (e⁻/DN) | PTC | gain poissonnien de `dark_current` | a = 1/K de `pushbroom_temporal_noise`, fiche technique |
+| Gain K (e⁻/DN) | PTC | gain poissonnien de `dark_current` | b = 1/K de `pushbroom_temporal_noise`, fiche technique |
 | Bruit à signal nul b (DN²) | `dark_frame` | ordonnée de la PTC | b de `pushbroom_temporal_noise` |
-| Bruit de lecture (e⁻) | PTC | √b × K (`dark_frame` + gain) | fiche technique |
+| Bruit de lecture (e⁻) | PTC | √a × K (`dark_frame` + gain) | fiche technique |
 | Linéarité | erreur de linéarité de la PTC | `linearity` | évolution de la PRNU avec le niveau |
 | Pixels chauds | `dark_current` | `defective_pixels` | deux sessions |
 | Pixels télégraphiques | `rts_pixels` | classe « bruyant » de `defective_pixels` | deux sessions |

@@ -23,14 +23,14 @@ def result(dark):
 def test_offset_map(dark, result):
     t = dark.truth
     err = result.offset_map - t.offset_map
-    assert err.std() == pytest.approx(np.sqrt(t.b / K), rel=0.02)
+    assert err.std() == pytest.approx(np.sqrt(t.a / K), rel=0.02)
     assert abs(result.mean_offset - t.offset_map.mean()) < 5 * result.u_mean_offset
 
 
-def test_temporal_variance_is_b(dark, result):
+def test_temporal_variance_is_a(dark, result):
     # Tolérance : incertitude statistique + validité du terme 1/12 (≈ 0,5 %).
-    tol = 5 * result.u_temporal_variance + 0.005 * dark.truth.b
-    assert abs(result.temporal_variance - dark.truth.b) < tol
+    tol = 5 * result.u_temporal_variance + 0.005 * dark.truth.a
+    assert abs(result.temporal_variance - dark.truth.a) < tol
     assert result.temporal_noise == pytest.approx(np.sqrt(result.temporal_variance))
 
 
@@ -78,7 +78,7 @@ def test_pushbroom_block():
     assert r.offset_map.shape == (1, 512)
     assert r.decomposition.row is None
     assert abs(r.dsnu - t.dsnu_rms) < 5 * r.u_dsnu
-    assert abs(r.temporal_variance - t.b) < 5 * r.u_temporal_variance + 0.005 * t.b
+    assert abs(r.temporal_variance - t.a) < 5 * r.u_temporal_variance + 0.005 * t.a
 
 
 def test_input_checks(dark):

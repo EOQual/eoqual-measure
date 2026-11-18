@@ -64,8 +64,8 @@ def test_dead_and_stuck_pixels():
     frames = s.expose(t.photons_for_signal(2500.0), n_frames=16, seed=3).frames.astype(float)
     # Morts : offset et bruit de lecture seulement.
     dead_resid = frames[:, d.dead] - t.offset_map[d.dead]
-    assert abs(dead_resid.mean()) < 5 * np.sqrt(t.b / dead_resid.size)
-    assert dead_resid.var() == pytest.approx(t.b, rel=0.2)
+    assert abs(dead_resid.mean()) < 5 * np.sqrt(t.a / dead_resid.size)
+    assert dead_resid.var() == pytest.approx(t.a, rel=0.2)
     # Bloqués : code constant, égal à la vérité.
     np.testing.assert_array_equal(frames[:, d.stuck], np.broadcast_to(d.stuck_value[d.stuck], (16, d.stuck.sum())))
 

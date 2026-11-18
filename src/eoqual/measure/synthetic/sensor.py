@@ -21,8 +21,9 @@ Deux graines distinctes :
 - la graine passée à `MatrixSensor.expose` fixe le **bruit temporel** de
   la pile acquise.
 
-Notation du bruit (CATALOGUE.md, §0) : σ²(μ) = a·μ + b en DN, avec
-a = 1/K et b = (σ_lect/K)² + 1/12 (quantification).
+Notation du bruit (CATALOGUE.md, §0) : σ²(μ) = a + b·μ en DN, avec
+a = (σ_lect/K)² + 1/12 (plancher, quantification comprise) et b = 1/K
+(pente).
 """
 
 from __future__ import annotations
@@ -241,9 +242,9 @@ class SensorTruth:
     prnu :
         Décomposition pixel / ligne / colonne de la PRNU (relative).
     a :
-        Pente du modèle de bruit temporel, 1/K (DN par DN).
+        Variance temporelle à signal nul (plancher), (σ_lect/K)² + 1/12 (DN²).
     b :
-        Variance temporelle à signal nul, (σ_lect/K)² + 1/12 (DN²).
+        Pente du modèle de bruit temporel, 1/K (DN par DN).
     saturation_dn :
         Code maximal du convertisseur, 2ⁿ − 1 (DN).
     tdi_stages :
@@ -358,7 +359,7 @@ class SensorTruth:
         Variance temporelle attendue par pixel (DN²), hors écrêtages, part
         **non corrélée** entre pixels.
 
-        a·μ + b, avec μ = (μ_e + charge d'obscurité)/K le signal corrigé de
+        a + b·μ, avec μ = (μ_e + charge d'obscurité)/K le signal corrigé de
         l'offset (DN) ; avec non-linéarité, la part poissonnienne est
         comprimée par (1 − 2βμ_e/FW)² (approximation au premier ordre).
         Nulle pour un pixel bloqué. Le bruit de ligne et les motifs
@@ -367,7 +368,7 @@ class SensorTruth:
         e = self.signal_electrons(photons) + self.dark_electrons(exposure_time, temperature)
         if self.nonlinearity_map is not None:
             e = e * (1.0 - 2.0 * self.nonlinearity_map * e / self.params.full_well) ** 2
-        var = self.a * e / self.params.conversion_gain + self.b
+        var = self.a + self.b * e / self.params.conversion_gain
         if self.defects is not None:
             var = np.where(self.defects.stuck, 0.0, var)
         return var
@@ -482,8 +483,8 @@ def _build_truth(p: SensorParams, tdi_stages: int = 1) -> SensorTruth:
         dsnu=dsnu,
         gain_map=1.0 + prnu.total,
         prnu=prnu,
-        a=1.0 / k,
-        b=(p.read_noise / k) ** 2 + 1.0 / 12.0,
+        a=(p.read_noise / k) ** 2 + 1.0 / 12.0,
+        b=1.0 / k,
         saturation_dn=2**p.bit_depth - 1,
         tdi_stages=tdi_stages,
         dark_current=dark,

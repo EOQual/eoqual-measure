@@ -30,7 +30,7 @@ def test_dark_mean_and_poisson_variance():
     frames = s.dark(n_frames=k, seed=1, exposure_time=texp).frames.astype(float)
     dark_dn = t.dark_electrons(texp) / t.gain
     err = frames.mean(axis=0) - (t.offset_map + dark_dn)
-    var_expected = t.b + dark_dn / t.gain                          # Poisson : a·μ_d + b
+    var_expected = t.a + dark_dn / t.gain                          # Poisson : a + b·μ_d
     assert abs(err.mean()) < 5 * np.sqrt(var_expected.mean() / (k * err.size))
     assert err.std() == pytest.approx(np.sqrt(var_expected.mean() / k), rel=0.03)
     var = frames.var(axis=0, ddof=1).mean()
@@ -89,7 +89,7 @@ def test_bias_and_overscan_track_each_other():
     assert np.diff(a.bias_offsets - 0.05 * np.arange(k)).std() > 0           # gigue présente
     os_level = a.overscan.astype(float).mean(axis=(1, 2)) - t.overscan_offset.mean()
     dark_os = t.params.dark_current * 10.0 / t.gain
-    var_os = t.b + dark_os / t.gain
+    var_os = t.a + dark_os / t.gain
     n_os = 16 * t.params.shape[0]
     assert np.std(os_level - dark_os - a.bias_offsets) == pytest.approx(np.sqrt(var_os / n_os), rel=0.25)
     # L'overscan corrige la variation d'offset des pixels actifs.

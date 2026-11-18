@@ -82,7 +82,7 @@ def test_whiskbroom_bands_and_scan_direction():
     assert a.image.shape == (400, 512)
     np.testing.assert_array_equal(a.detector, np.arange(400) % 10)
     prof = a.image.mean(axis=1)
-    sigma = np.sqrt((t.a * 1500 + t.b) / 512)
+    sigma = np.sqrt((t.b * 1500 + t.a) / 512)
     assert np.std(prof - a.expected_profile) == pytest.approx(sigma, rel=0.15)
     diff = prof[a.backward].mean() - prof[~a.backward].mean()
     assert diff == pytest.approx(0.8 + 1500 * 0.002, abs=5 * sigma * np.sqrt(2 / 200))

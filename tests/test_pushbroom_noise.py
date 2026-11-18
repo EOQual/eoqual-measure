@@ -43,7 +43,7 @@ def test_null_statistics(pb, dark, order):
     mu, var, rho, _, _, n = _filtered_segments(img, 32, order, 2)
     _, sd = rho1_null(n, order)
     assert rho.std() == pytest.approx(sd, rel=0.05)
-    expected = t.a * mu.mean() + t.b
+    expected = t.b * mu.mean() + t.a
     dof = effective_dof(n, order)
     # Var(s²) = 2σ⁴/ν : rapport à 1 à 5 % près (approximation gaussienne).
     assert var.var() / expected**2 * dof / 2 == pytest.approx(1.0, abs=0.05)
@@ -58,25 +58,25 @@ def uniform_result(pb, dark):
 def test_uniform_scene(pb, uniform_result):
     t = pb.truth
     r = uniform_result
-    assert abs(r.a - t.a) < 5 * r.u_a
     assert abs(r.b - t.b) < 5 * r.u_b
+    assert abs(r.a - t.a) < 5 * r.u_a
     assert abs(r.reduced_chi2 - 1) < 0.05
     assert not r.texture_suspected
     assert r.rejected_fraction == 0.0
 
 
-def test_b_from_dark(pb, dark):
+def test_a_from_dark(pb, dark):
     t = pb.truth
-    r = measure_pushbroom_noise(_images(pb, contrast=0.0), dark=dark, b=dark.temporal_variance)
-    assert r.b_fixed and r.u_b == 0.0 and r.cov.shape == (1, 1)
-    assert abs(r.a - t.a) < 5 * r.u_a + abs(dark.temporal_variance - t.b) / 1000
+    r = measure_pushbroom_noise(_images(pb, contrast=0.0), dark=dark, a=dark.temporal_variance)
+    assert r.a_fixed and r.u_a == 0.0 and r.cov.shape == (1, 1)
+    assert abs(r.b - t.b) < 5 * r.u_b + abs(dark.temporal_variance - t.a) / 1000
 
 
 def test_smooth_blurred_texture(pb, dark):
     """Texture lisse (β = 3) de 3 %, optique σ = 0,6 px : mesure non biaisée."""
     t = pb.truth
     r = measure_pushbroom_noise(_images(pb, contrast=0.03), dark=dark)
-    assert abs(r.a - t.a) < 5 * r.u_a
+    assert abs(r.b - t.b) < 5 * r.u_b
     assert not r.texture_suspected
 
 
@@ -84,7 +84,7 @@ def test_rough_texture_is_flagged(pb, dark):
     """Texture rugueuse (β = 2) : σ² surestimé, et le diagnostic le signale."""
     t = pb.truth
     r = measure_pushbroom_noise(_images(pb, contrast=0.03, beta=2.0), dark=dark)
-    assert r.a > t.a + 3 * r.u_a
+    assert r.b > t.b + 3 * r.u_b
     assert r.texture_suspected
 
 
@@ -92,7 +92,7 @@ def test_rough_texture_is_flagged(pb, dark):
 def test_other_filters_on_uniform_scene(pb, dark, along, across):
     t = pb.truth
     r = measure_pushbroom_noise(_images(pb, contrast=0.0), dark=dark, along_order=along, across_order=across)
-    assert abs(r.a - t.a) < 5 * r.u_a
+    assert abs(r.b - t.b) < 5 * r.u_b
 
 
 def test_rejection_option(pb, dark):

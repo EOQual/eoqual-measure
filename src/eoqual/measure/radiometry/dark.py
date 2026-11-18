@@ -37,17 +37,17 @@ class DarkFrameResult:
         push broom (1, W) : la ligne moyenne.
     mean_offset, u_mean_offset :
         Offset moyen (moyenne spatiale de la carte) et son incertitude-type
-        due au bruit temporel, √(b/(K·N)).
+        due au bruit temporel, √(â/(K·N)).
     temporal_variance_map :
         Variance temporelle par pixel (estimateur en 1/(K − 1)).
     temporal_variance, u_temporal_variance :
-        Variance temporelle moyenne b̂ (paramètre b du modèle σ² = a·μ + b)
-        et son incertitude-type, b̂·√(2/((K − 1)·N)).
+        Variance temporelle moyenne â (plancher a du modèle σ² = a + b·μ)
+        et son incertitude-type, â·√(2/((K − 1)·N)).
     temporal_noise :
-        √b̂, bruit temporel à signal nul σ₀.
+        √â, bruit temporel à signal nul σ₀.
     dsnu, u_dsnu :
         DSNU : écart-type spatial de la carte d'offset corrigé du bruit
-        temporel résiduel (b̂/K), et son incertitude-type par rapport à la
+        temporel résiduel (â/K), et son incertitude-type par rapport à la
         carte réalisée.
     decomposition :
         Décomposition ligne / colonne / pixel de la DSNU.

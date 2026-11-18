@@ -21,14 +21,14 @@ def test_shapes_and_format(pb):
 
 
 def test_detector_statistics(pb):
-    """Le long de la trace : moyenne = offset + signal × gain du détecteur ; variance = a·μ + b."""
+    """Le long de la trace : moyenne = offset + signal × gain du détecteur ; variance = a + b·μ."""
     t = pb.truth
     m = 2000
     signal = 1500.0
     img = pb.expose(t.photons_for_signal(signal), n_lines=m, seed=2).image.astype(float)
     mu_det = signal * t.detector_gain
     expected_mean = t.detector_offset + mu_det
-    var_det = t.a * mu_det + t.b
+    var_det = t.b * mu_det + t.a
     err = img.mean(axis=0) - expected_mean
     assert err.std() == pytest.approx(np.sqrt(var_det.mean() / m), rel=0.1)
     var = img.var(axis=0, ddof=1).mean()
@@ -53,7 +53,7 @@ def test_tdi(n):
     img = s.expose(phi, n_lines=4000, seed=4).image.astype(float)
     mu = n * p.qe * phi / p.conversion_gain
     assert (img.mean(axis=0) - t.detector_offset).mean() == pytest.approx(mu, rel=0.002)
-    assert img.var(axis=0, ddof=1).mean() == pytest.approx(t.a * mu + t.b, rel=0.02)
+    assert img.var(axis=0, ddof=1).mean() == pytest.approx(t.b * mu + t.a, rel=0.02)
     assert t.photons_for_signal(mu) == pytest.approx(phi)
 
 

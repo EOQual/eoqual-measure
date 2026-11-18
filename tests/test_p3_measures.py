@@ -21,7 +21,7 @@ def rts_case():
 
 def test_rts_detection(rts_case):
     t, _, r = rts_case
-    snr = t.rts.amplitude / np.sqrt(t.b)
+    snr = t.rts.amplitude / np.sqrt(t.a)
     assert not np.any(~np.isin(r.index, t.rts.index))                    # aucune fausse détection
     strong = t.rts.index[snr >= 2.5]
     assert np.all(np.isin(strong, r.index))                              # tous les sauts ≥ 2,5 σ
@@ -31,7 +31,7 @@ def test_rts_parameters(rts_case):
     t, acq, r = rts_case
     true_i = np.searchsorted(t.rts.index, r.index)
     amp = t.rts.amplitude[true_i]
-    sigma = np.sqrt(t.b)
+    sigma = np.sqrt(t.a)
     # Amplitude : différence de deux moyennes de niveaux, incertitude ≈ σ·√(1/n_bas + 1/n_haut).
     n_hi = r.states.sum(axis=0)
     n_lo = r.states.shape[0] - n_hi
@@ -149,7 +149,7 @@ def test_whiskbroom_spatial_noise():
     fb_true = a.expected_profile[a.backward].mean() - a.expected_profile[~a.backward].mean()
     assert abs(r.forward_backward - fb_true) < 5 * r.u_forward_backward
     exact = band_structure(a.expected_profile, 10)
-    noise = np.sqrt((t.a * 1500 + t.b) / 512)
+    noise = np.sqrt((t.b * 1500 + t.a) / 512)
     assert abs(r.bands.sigma - exact.sigma) < 5 * noise / np.sqrt(60) + 0.01 * exact.sigma
     assert abs(r.spatial_sigma - a.expected_profile.std()) < 5 * r.u_spatial_sigma
     with pytest.raises(ValueError):

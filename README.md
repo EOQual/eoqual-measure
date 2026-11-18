@@ -127,7 +127,7 @@ réelles.
 | `dark_frame` | ✅ | `eoqual.measure.radiometry.measure_dark_frame` | Offset, bruit à signal nul b, DSNU (ligne/colonne/pixel), stationnarité | Moyenne et variance temporelles, décomposition sans biais ; pile matricielle ou bloc push broom |
 | `dark_current` | ✅ | `eoqual.measure.radiometry.measure_dark_current` | Courant par pixel, DSNU du courant, pixels chauds, gain poissonnien, loi en température | Régression masquée par pixel, loi T³·exp(−E_g/2kT) |
 | `temporal_noise` | ✅ | `eoqual.measure.radiometry.measure_temporal_noise` | Variance temporelle, signal corrigé de l'obscurité | Différence de paire ou variance de pile |
-| `photon_transfer_curve` | ✅ | `eoqual.measure.radiometry.measure_ptc` | Gain (e⁻/DN), bruit de lecture, saturation (EMVA), linéarité, χ² | Moindres carrés pondérés σ² = a·μ + b ; s'appuie sur `temporal_noise` |
+| `photon_transfer_curve` | ✅ | `eoqual.measure.radiometry.measure_ptc` | Gain (e⁻/DN), bruit de lecture, saturation (EMVA), linéarité, χ² | Moindres carrés pondérés σ² = a + b·μ (a plancher, b pente) ; s'appuie sur `temporal_noise` |
 | `prnu` | ✅ | `eoqual.measure.radiometry.measure_prnu` | Carte de réponse, PRNU totale et EMVA, vignettage (BF) / PRNU (HF) | Surface de Legendre, décomposition de la HF |
 | `linearity` | ✅ | `eoqual.measure.radiometry.measure_linearity` | Erreur de linéarité EMVA, courbure commune et par pixel | Ajustement quadratique, méthode delta |
 | `defective_pixels` | ✅ | `eoqual.measure.radiometry.map_defective_pixels` | Pixels bloqués, morts, chauds, bruyants, réponse aberrante | Tests du χ², médiane locale |

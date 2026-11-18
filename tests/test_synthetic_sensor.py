@@ -71,12 +71,12 @@ def test_dark_stack_mean_and_variance(sensor):
     n = frames[0].size
     # Moyenne temporelle par pixel = carte d'offset, à √(b/K) près.
     resid = frames.mean(axis=0) - t.offset_map
-    sigma_mean = np.sqrt(t.b / k)
+    sigma_mean = np.sqrt(t.a / k)
     assert abs(resid.mean()) < 5 * sigma_mean / np.sqrt(n)
     assert resid.std() == pytest.approx(sigma_mean, rel=0.02)
     # Variance temporelle (1/(K − 1)) = b.
     var = frames.var(axis=0, ddof=1).mean()
-    assert var == pytest.approx(t.b, rel=5 * np.sqrt(2 / ((k - 1) * n)) + 0.005)
+    assert var == pytest.approx(t.a, rel=5 * np.sqrt(2 / ((k - 1) * n)) + 0.005)
 
 
 @pytest.mark.parametrize("signal_dn", [50.0, 500.0, 2500.0])
@@ -89,7 +89,7 @@ def test_flat_mean_and_variance(sensor, signal_dn):
     mean_map = frames.mean(axis=0)
     expected_mean = t.expected_mean(photons)
     expected_var = t.expected_variance(photons).mean()
-    assert expected_var == pytest.approx(t.a * signal_dn + t.b, rel=1e-6)
+    assert expected_var == pytest.approx(t.b * signal_dn + t.a, rel=1e-6)
     # Écart moyen nul à 5 σ près, σ = √(σ²_temp / (K·N)).
     sigma = np.sqrt(expected_var / (k * n))
     assert abs((mean_map - expected_mean).mean()) < 5 * sigma
@@ -108,7 +108,7 @@ def test_photon_transfer_slope_is_one_over_gain(sensor):
     slope, _ = np.polyfit(mus, variances, 1)
     # L'ordonnée à l'origine (b) est trop mal contrainte par ces niveaux ;
     # elle est vérifiée sur l'obscurité (test_dark_stack_mean_and_variance).
-    assert slope == pytest.approx(t.a, rel=0.02)
+    assert slope == pytest.approx(t.b, rel=0.02)
 
 
 # --- Écrêtages et format ---------------------------------------------------
@@ -133,7 +133,7 @@ def test_full_well_clipping():
     frames = s.expose(1e6, n_frames=32, seed=3).frames.astype(np.float64)
     plateau = t.offset_map + p.full_well / p.conversion_gain
     assert (frames.mean(axis=0) - plateau).mean() == pytest.approx(0.0, abs=0.01)
-    assert frames.var(axis=0, ddof=1).mean() == pytest.approx(t.b, rel=0.03)
+    assert frames.var(axis=0, ddof=1).mean() == pytest.approx(t.a, rel=0.03)
 
 
 def test_scene_map_input(sensor):

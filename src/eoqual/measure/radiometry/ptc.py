@@ -3,8 +3,8 @@
 
 Entrée : une paire (ou pile) de champs uniformes par niveau d'éclairement,
 et une pile d'obscurité. À chaque niveau, `measure_temporal_noise` donne
-(μ, σ²) ; on ajuste σ²(μ) = a·μ + b sur la plage linéaire, d'où le gain
-K = 1/a (e⁻/DN) et le bruit de lecture. Voir REFERENCE_TECHNIQUE.md, partie IV, chapitre 3.
+(μ, σ²) ; on ajuste σ²(μ) = a + b·μ sur la plage linéaire (a plancher, b
+pente), d'où le gain K = 1/b (e⁻/DN) et le bruit de lecture. Voir REFERENCE_TECHNIQUE.md, partie IV, chapitre 3.
 """
 
 from __future__ import annotations
@@ -40,17 +40,18 @@ class PTCResult:
     used :
         Niveaux retenus pour l'ajustement.
     a, b, cov :
-        Pente (1/K), ordonnée à l'origine (DN²) et matrice de covariance
-        (2 × 2) de l'ajustement pondéré σ² = a·μ + b.
+        Ordonnée à l'origine (plancher, DN²), pente (1/K) et matrice de
+        covariance (2 × 2, ordre (a, b)) de l'ajustement pondéré
+        σ² = a + b·μ.
     u_a, u_b :
         Incertitudes-types de a et b.
     reduced_chi2 :
         χ² réduit de l'ajustement : proche de 1 si le modèle affine et les
         incertitudes sont corrects.
     gain, u_gain :
-        Gain de conversion K = 1/a (e⁻/DN) et son incertitude-type.
+        Gain de conversion K = 1/b (e⁻/DN) et son incertitude-type.
     read_noise_dn, read_noise_e, u_read_noise_e :
-        Bruit à signal nul hors quantification, √(b − 1/12) (ou √b), en DN
+        Bruit à signal nul hors quantification, √(a − 1/12) (ou √a), en DN
         et en e⁻, et l'incertitude en e⁻.
     saturation_signal_dn, saturation_e :
         Signal au maximum de variance (point de saturation au sens EMVA
@@ -84,13 +85,13 @@ class PTCResult:
 
 
 def _weighted_line(x, y, u):
-    """Ajustement pondéré y = a·x + b ; renvoie a, b, cov, χ² réduit."""
+    """Ajustement pondéré y = a + b·x ; renvoie a, b, cov (ordre (a, b)), χ² réduit."""
     w = 1.0 / u**2
-    design = np.column_stack([x, np.ones_like(x)])
+    design = np.column_stack([np.ones_like(x), x])
     normal = design.T @ (design * w[:, None])
     cov = np.linalg.inv(normal)
     a, b = cov @ (design.T @ (w * y))
-    resid = y - (a * x + b)
+    resid = y - (a + b * x)
     dof = max(len(x) - 2, 1)
     return float(a), float(b), cov, float(np.sum(w * resid**2) / dof)
 
@@ -127,9 +128,9 @@ def measure_ptc(
         niveau), l'ajustement se limite aux signaux ≤ fit_fraction ×
         signal de saturation (EMVA 1288 : 70 %).
     include_dark :
-        Ajoute l'obscurité comme point (μ = 0, σ² = b̂) : contraint b.
+        Ajoute l'obscurité comme point (μ = 0, σ² = â) : contraint a.
     quantization_correction :
-        Retire 1/12 DN² de b avant d'en déduire le bruit de lecture.
+        Retire 1/12 DN² de a avant d'en déduire le bruit de lecture.
     """
     if len(flats) < 2:
         raise ValueError("au moins deux niveaux d'éclairement sont nécessaires")
@@ -181,16 +182,16 @@ def measure_ptc(
 
     a, b, cov, chi2 = _weighted_line(signal[used], variance[used], u_variance[used])
     u_a, u_b = float(np.sqrt(cov[0, 0])), float(np.sqrt(cov[1, 1]))
-    gain = 1.0 / a
-    u_gain = u_a / a**2
+    gain = 1.0 / b
+    u_gain = u_b / b**2
 
     q = QUANTIZATION_VARIANCE if quantization_correction else 0.0
-    r2 = max(b - q, 0.0)
+    r2 = max(a - q, 0.0)
     rn_dn = float(np.sqrt(r2))
     rn_e = rn_dn * gain
     if rn_dn > 0:
-        # σ_e = √(b − q)/a : propagation avec la covariance de (a, b).
-        jac = np.array([-rn_dn / a**2, 1.0 / (2.0 * a * rn_dn)])
+        # σ_e = √(a − q)/b : propagation avec la covariance de (a, b).
+        jac = np.array([1.0 / (2.0 * b * rn_dn), -rn_dn / b**2])
         u_rn_e = float(np.sqrt(jac @ cov @ jac))
     else:
         u_rn_e = float("nan")

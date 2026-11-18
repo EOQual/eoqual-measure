@@ -13,9 +13,9 @@ def test_pair(sensor, signal_dn):
     t = sensor.truth
     photons = t.photons_for_signal(signal_dn)
     r = measure_temporal_noise(sensor.expose(photons, n_frames=2, seed=5).frames, dark=t.params.offset)
-    expected = t.a * signal_dn + t.b
+    expected = t.b * signal_dn + t.a
     assert r.method == "pair"
-    assert abs(r.temporal_variance - expected) < 5 * r.u_temporal_variance + 0.005 * t.b
+    assert abs(r.temporal_variance - expected) < 5 * r.u_temporal_variance + 0.005 * t.a
     assert abs(r.signal - signal_dn) < 5 * np.sqrt(expected / (2 * t.params.shape[0] * t.params.shape[1])) + 0.05
 
 
@@ -23,10 +23,10 @@ def test_stack(sensor):
     t = sensor.truth
     photons = t.photons_for_signal(800.0)
     r = measure_temporal_noise(sensor.expose(photons, n_frames=16, seed=6).frames)
-    expected = t.a * 800.0 + t.b
+    expected = t.b * 800.0 + t.a
     assert r.method == "stack"
     assert r.variance_map.shape == t.params.shape
-    assert abs(r.temporal_variance - expected) < 5 * r.u_temporal_variance + 0.005 * t.b
+    assert abs(r.temporal_variance - expected) < 5 * r.u_temporal_variance + 0.005 * t.a
     assert r.signal is None
 
 
@@ -37,9 +37,9 @@ def test_pair_removes_fixed_pattern():
     signal = 3000.0
     frames = s.expose(t.photons_for_signal(signal), n_frames=2, seed=7).frames
     r = measure_temporal_noise(frames)
-    expected = t.a * signal + t.b
+    expected = t.b * signal + t.a
     assert frames[0].astype(float).var() > 5 * expected      # FPN dominant
-    assert abs(r.temporal_variance - expected) < 5 * r.u_temporal_variance + 0.005 * t.b
+    assert abs(r.temporal_variance - expected) < 5 * r.u_temporal_variance + 0.005 * t.a
 
 
 def test_pair_insensitive_to_level_shift(sensor):

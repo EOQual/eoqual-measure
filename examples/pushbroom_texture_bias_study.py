@@ -36,7 +36,7 @@ def main() -> None:
                                       prnu_pixel=0.0, prnu_col=0.01))
     t = pb.truth
     dark = measure_dark_frame(pb.dark(n_lines=1000, seed=1).image, layout="pushbroom")
-    head = "| β | c | σ_psf | " + " | ".join(f"(a − 1/K)/u [{fa},{fc}]" for fa, fc in FILTERS) + " | cohérence [2,2] |"
+    head = "| β | c | σ_psf | " + " | ".join(f"(b − 1/K)/u [{fa},{fc}]" for fa, fc in FILTERS) + " | cohérence [2,2] |"
     print(head)
     print("|" + "---|" * (head.count("|") - 1))
     for beta, c, psf in CASES:
@@ -50,7 +50,7 @@ def main() -> None:
         coh = ""
         for fa, fc in FILTERS:
             r = measure_pushbroom_noise(imgs, dark=dark, along_order=fa, across_order=fc)
-            cells.append(f"{(r.a - t.a) / r.u_a:+.1f}")
+            cells.append(f"{(r.b - t.b) / r.u_b:+.1f}")
             if (fa, fc) == (2, 2):
                 flag = " ⚠" if r.texture_suspected else ""
                 coh = f"{(r.consistency - 1) / r.u_consistency:+.1f} u{flag}"

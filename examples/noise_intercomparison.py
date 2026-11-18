@@ -23,7 +23,7 @@ préexistant et bruit de test :
 Utilisation
 -----------
     # Validation sur image synthétique (bruit connu, injecté à la volée)
-    python examples/noise_intercomparison.py --sigma2 25.0 --a 0.08 --b 5.0
+    python examples/noise_intercomparison.py --sigma2 25.0 --a 5.0 --b 0.08
 
     # Mesure directe sur vos images (aucun bruit ajouté)
     python examples/noise_intercomparison.py --images photo1.tif photo2.tif
@@ -41,7 +41,7 @@ zones homogènes détectées (cumulé) est rapporté pour chaque méthode.
 
 Non-linéarité aux extrêmes de luminance
 ------------------------------------------
-La relation bruit-luminance σ²(I) = a·I + b n'est en général linéaire que
+La relation bruit-luminance σ²(I) = a + b·I n'est en général linéaire que
 sur une plage intermédiaire de luminance : en basse luminance, la
 quantification du capteur devient non négligeable ; en haute luminance,
 l'écrêtage/saturation comprime artificiellement la variance mesurée. Deux
@@ -472,7 +472,7 @@ def run_noise_vs_luminance(
     -------
     Dict[str, object]
         Dictionnaire `{'curves': {méthode: {'means','variances','stds','n_zones'}},
-        'reference_method', 'used_in_fit', 'fit_coeffs_1' (a, b de la droite
+        'reference_method', 'used_in_fit', 'fit_a', 'fit_b' (plancher a, pente b de la droite
         affine), 'fit_coeffs_extra' (coefficients du degré `fit_degree` si
         > 1, sinon None)}`.
     """
@@ -534,7 +534,7 @@ def run_noise_vs_luminance(
 
     if used_in_fit.sum() >= 2:
         weights = 1.0 / np.maximum(stds_arr[used_in_fit], 1e-6) ** 2
-        fit_a, fit_b = np.polyfit(means_arr[used_in_fit], variances_arr[used_in_fit], deg=1, w=weights)
+        fit_b, fit_a = np.polyfit(means_arr[used_in_fit], variances_arr[used_in_fit], deg=1, w=weights)
     else:
         fit_a, fit_b = float('nan'), float('nan')
 
@@ -582,9 +582,9 @@ def plot_comparison(
     luminance_curve : Dict[str, object]
         Résultat de `run_noise_vs_luminance` (toutes méthodes).
     true_a : float ou None
-        Pente réelle du bruit hétéroscédastique injecté, si connue.
+        Ordonnée à l'origine (plancher) réelle du bruit injecté, si connue.
     true_b : float ou None
-        Ordonnée à l'origine réelle du bruit hétéroscédastique injecté, si connue.
+        Pente réelle du bruit hétéroscédastique injecté, si connue.
     n_images : int
         Nombre d'images utilisées.
     output_html : str
@@ -702,7 +702,7 @@ def plot_comparison(
 
         fig.add_trace(
             go.Scatter(
-                x=x_line, y=fit_a * x_line + fit_b, mode='lines',
+                x=x_line, y=fit_a + fit_b * x_line, mode='lines',
                 name=f"Régression affine sur {reference_method} (a={fit_a:.3g}, b={fit_b:.3g})",
                 line=dict(color="black", dash="dash"),
             ),
@@ -721,7 +721,7 @@ def plot_comparison(
         if true_a is not None and true_b is not None:
             fig.add_trace(
                 go.Scatter(
-                    x=x_line, y=true_a * x_line + true_b, mode='lines',
+                    x=x_line, y=true_a + true_b * x_line, mode='lines',
                     name=f"Modèle réel injecté (a={true_a:.3g}, b={true_b:.3g})",
                     line=dict(color="firebrick"),
                 ),
@@ -915,12 +915,12 @@ def main() -> None:
     )
     parser.add_argument(
         "--a", type=float, default=None,
-        help="Pente 'a' du bruit hétéroscédastique à injecter (voir --sigma2 "
+        help="Plancher 'a' du bruit à injecter, σ² = a + b·I (voir --sigma2 "
              "pour la logique par défaut / explicite).",
     )
     parser.add_argument(
         "--b", type=float, default=None,
-        help="Ordonnée à l'origine 'b' du bruit hétéroscédastique à injecter.",
+        help="Pente 'b' du bruit hétéroscédastique à injecter, σ² = a + b·I.",
     )
     parser.add_argument(
         "--bit_depth", type=int, default=None,
@@ -1000,10 +1000,10 @@ def main() -> None:
         images = load_real_images(args.images)
 
         if user_gave_noise_params:
-            a = args.a if args.a is not None else 0.0
-            b = args.b if args.b is not None else (args.sigma2 if args.sigma2 is not None else 0.0)
+            b = args.b if args.b is not None else 0.0
+            a = args.a if args.a is not None else (args.sigma2 if args.sigma2 is not None else 0.0)
             true_a, true_b = a, b
-            true_variance = b if a == 0.0 else None
+            true_variance = a if b == 0.0 else None
             print(
                 "ATTENTION : vous injectez un bruit supplémentaire (a="
                 f"{a}, b={b}) sur des images réelles, qui contiennent très "
@@ -1039,15 +1039,15 @@ def main() -> None:
     else:
         # --- Mode validation synthétique : injection à la volée, sans écriture disque ---
         clean_image = generate_clean_image()
-        a = args.a if args.a is not None else 0.08
-        b = args.b if args.b is not None else 5.0
+        a = args.a if args.a is not None else 5.0
+        b = args.b if args.b is not None else 0.08
         sigma2 = args.sigma2 if args.sigma2 is not None else 25.0
         true_a, true_b = a, b
 
         # Protocole hétéroscédastique (courbe bruit-luminance)
         noisy_image_hetero = add_noise(clean_image, a=a, b=b, seed=args.seed, bit_depth=args.bit_depth)
         # Protocole homoscédastique dédié (panneau de comparaison globale, variance constante)
-        noisy_image_homo = add_noise(clean_image, a=0.0, b=sigma2, seed=args.seed, bit_depth=args.bit_depth)
+        noisy_image_homo = add_noise(clean_image, a=sigma2, b=0.0, seed=args.seed, bit_depth=args.bit_depth)
 
         results = run_comparison([noisy_image_homo])
         luminance_curve = run_noise_vs_luminance(

@@ -53,8 +53,8 @@ def test_difference_mode_removes_fixed_pattern():
     frames = s.dark(n_frames=8, seed=1).frames
     img = noise_power_spectrum(frames, mode="image")
     diff = noise_power_spectrum(frames, mode="difference")
-    assert diff.variance == pytest.approx(t.b, rel=0.03)
-    assert img.variance > t.b + 0.8 * 3.0**2
+    assert diff.variance == pytest.approx(t.a, rel=0.03)
+    assert img.variance > t.a + 0.8 * 3.0**2
     assert diff.n_images == 4
 
 

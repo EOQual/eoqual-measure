@@ -4,7 +4,10 @@
 
 Non publié
 
-:   -   Document des estimateurs de bruit découpé par thème dans
+:   -   Document du variogramme découpé par thème dans
+        `docs/technique/bruit-variogramme/` ; les chapitres gardent leur
+        numéro.
+    -   Document des estimateurs de bruit découpé par thème dans
         `docs/technique/bruit-estimateurs/` (méthodes et biais, conduite
         de la mesure, utilisation, recommandations).
     -   Documents de la MTF et du simulateur découpés par thème dans

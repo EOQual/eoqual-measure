@@ -2,7 +2,7 @@
 Variance du bruit par la pépite du variogramme (`variogram_noise`).
 
 Scènes simulées à bruit connu ; tolérances de 5 u. Voir
-docs/technique/bruit-variogramme.md, §4.6.
+docs/technique/bruit-variogramme/validation.md, §4.6.
 """
 
 import os

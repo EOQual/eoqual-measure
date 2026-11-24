@@ -1,7 +1,7 @@
 """
 Étude : biais de la pépite du variogramme selon la scène et le bruit.
 
-Produit les tableaux 1 à 5 de docs/technique/bruit-variogramme.md :
+Produit les tableaux 1 à 5 de docs/technique/bruit-variogramme/ (validation.md et comparaison.md) :
 
 1. scènes fractales (fBm, β = 2,5 à 4), avec ou sans flou optique, à deux
    contrastes : biais relatif de la pépite (modèles linéaire et

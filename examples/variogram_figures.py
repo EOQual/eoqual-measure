@@ -1,5 +1,5 @@
 """
-Figures de docs/technique/bruit-variogramme.md : principe, chaîne de
+Figures de docs/technique/bruit-variogramme/ : principe, chaîne de
 calcul, extrapolation à l'origine, biais en fonction de la fraction de
 pépite, pièges. Données simulées, graines fixées.
 

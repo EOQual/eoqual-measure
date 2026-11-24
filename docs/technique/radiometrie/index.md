@@ -81,7 +81,7 @@ particulier (indiqué) ; — : sans objet. *Sol* : banc de caractérisation ;
 | `noise_power_spectrum` | ✔ | ✔ image | ✔ image | zones uniformes, produits traités | sol, vol | 12 |
 | `structured_noise` | ✔ pile | ✱ image seule | ✱ image seule | obscurité, champs uniformes | sol | 12 |
 | `cnr_target` | ✔ | ✔ | ✔ | mire à deux plages | sol, vol | 13 |
-| `variogram_noise` | ✔ | ✔ | ✔ | une image brute, scène lisse à l'échelle du pixel | sol, vol | [variogramme](../bruit-variogramme.md) |
+| `variogram_noise` | ✔ | ✔ | ✔ | une image brute, scène lisse à l'échelle du pixel | sol, vol | [variogramme](../bruit-variogramme/index.md) |
 
 Sorties principales : voir l'objet de chaque chapitre. Un même résultat
 sert souvent d'entrée à une autre métrique : `DarkFrameResult` (obscurité
@@ -125,7 +125,7 @@ dématriçage, rééchantillonnage ou compression), `cnr_target` sur mire.
 **Image brute d'une scène quelconque** : `variogram_noise` (σ², SNR,
 modèle a + b·μ), en vérifiant `reliable`, la fraction de pépite F et
 l'anisotropie ; le croiser avec `estimate_noise(..., "ponomarenko")`
-([variogramme, §5.5](../bruit-variogramme.md#55-quelle-méthode-choisir-)).
+([variogramme, §5.5](../bruit-variogramme/comparaison.md#55-quelle-méthode-choisir-)).
 
 ### 1.5 Conventions
 
@@ -158,7 +158,7 @@ s'il y a lieu, les variantes de méthode écartées et les pistes. Le
 communs. La variance du bruit et le SNR d'une image brute par le
 variogramme (`variogram_noise`), qui relèvent aussi du suivi en vol, sont
 décrits avec les autres estimateurs sur scène :
-[variogramme](../bruit-variogramme.md). Les chemins de fichiers sont
+[variogramme](../bruit-variogramme/index.md). Les chemins de fichiers sont
 relatifs à `src/eoqual/measure/`.
 
 ```{toctree}

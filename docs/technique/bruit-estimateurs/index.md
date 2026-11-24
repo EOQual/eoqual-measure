@@ -4,7 +4,7 @@ Module `eoqual/measure/noise/variance.py` : estimation de la variance du bruit r
 dans des images 2D (télédétection métrique/infra-métrique), sur des zones
 supposées homogènes détectées automatiquement selon plusieurs stratégies.
 L'estimation par le variogramme, qui diagnostique sa propre fiabilité, a son
-document : [variogramme](../bruit-variogramme.md).
+document : [variogramme](../bruit-variogramme/index.md).
 
 | Document | Contenu |
 |---|---|

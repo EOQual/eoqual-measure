@@ -9,7 +9,7 @@ dans les [notes de version](../changelog.md).
 |---|---|---|
 | [MTF par bord incliné](mtf/index.md) | Orientation du bord, quatre estimateurs de MTF, support Bayer, CLI | `eoqual.measure.mtf` |
 | [Variance du bruit : estimateurs sur scène](bruit-estimateurs/index.md) | Six estimateurs par zones homogènes, ondelettes ou DCT, courbe bruit-luminance | `eoqual.measure.noise` |
-| [Variance du bruit et SNR par le variogramme](bruit-variogramme.md) | Pépite du variogramme, fiabilité, rayures, modèle a + b·μ | `eoqual.measure.noise` |
+| [Variance du bruit et SNR par le variogramme](bruit-variogramme/index.md) | Pépite du variogramme, fiabilité, rayures, modèle a + b·μ | `eoqual.measure.noise` |
 | [Strehl et énergie encerclée](psf-strehl.md) | Rapport de Strehl et EE(r) sur une source ponctuelle | `eoqual.measure.psf` |
 | [Mesures radiométriques](radiometrie/index.md) | Obscurité, PTC, PRNU, linéarité, défauts, convertisseur, push broom, bruit spatial, NPS, contraste | `eoqual.measure.radiometry`, `noise.spectrum`, `contrast` |
 | [Simulateur de capteur](simulateur/index.md) | Capteurs matriciel, push broom et whisk broom à vérité connue | `eoqual.measure.synthetic` |
@@ -23,7 +23,7 @@ produites par un script de `examples/`, cité dans la légende.
 
 mtf/index
 bruit-estimateurs/index
-bruit-variogramme
+bruit-variogramme/index
 psf-strehl
 radiometrie/index
 simulateur/index

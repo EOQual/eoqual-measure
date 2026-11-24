@@ -7,7 +7,7 @@ dans [`docs/technique/`](docs/technique/index.md) :
 |---|---|
 | I — MTF par bord incliné | [mtf/](docs/technique/mtf/index.md) |
 | II — Variance du bruit | [bruit-estimateurs/](docs/technique/bruit-estimateurs/index.md) |
-| IV, chapitre 14 — Variogramme | [bruit-variogramme.md](docs/technique/bruit-variogramme.md) |
+| IV, chapitre 14 — Variogramme | [bruit-variogramme/](docs/technique/bruit-variogramme/index.md) |
 | III — Strehl et énergie encerclée | [psf-strehl.md](docs/technique/psf-strehl.md) |
 | IV — Mesures radiométriques | [radiometrie/](docs/technique/radiometrie/index.md) |
 | V — Simulateur de capteur | [simulateur/](docs/technique/simulateur/index.md) |

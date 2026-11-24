@@ -9,7 +9,7 @@
 | Scène très hétérogène, résolution métrique, objets nombreux | `adaptive_segmentation` |
 | Robustesse sans réglage fin de seuil de platitude | `pca_estimate` |
 | Référence simple et rapide | `flat_patches` |
-| Image brute, valeur avec diagnostic de fiabilité, rayures | `variogram` ([variogramme](../bruit-variogramme.md)) |
+| Image brute, valeur avec diagnostic de fiabilité, rayures | `variogram` ([variogramme](../bruit-variogramme/index.md)) |
 
 En pratique, il est recommandé de **croiser au moins deux méthodes** de
 familles différentes (ex. `ponomarenko` + `adaptive_segmentation`) : un

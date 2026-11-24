@@ -4,7 +4,10 @@
 
 Non publié
 
-:   -   Documents de la MTF et du simulateur découpés par thème dans
+:   -   Document des estimateurs de bruit découpé par thème dans
+        `docs/technique/bruit-estimateurs/` (méthodes et biais, conduite
+        de la mesure, utilisation, recommandations).
+    -   Documents de la MTF et du simulateur découpés par thème dans
         `docs/technique/mtf/` et `docs/technique/simulateur/` ; les
         chapitres gardent leur numéro.
     -   **Nouvelle mesure `variogram_noise`** (`eoqual.measure.noise`) :

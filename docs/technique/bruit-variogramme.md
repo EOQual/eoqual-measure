@@ -9,7 +9,7 @@ de la géostatistique (Matheron, 1963). La méthode rend aussi un modèle de
 bruit σ² = a + b·μ lorsque la scène couvre plusieurs niveaux, et deux
 diagnostics qui disent quand la mesure est exploitable.
 
-Elle complète les [estimateurs sur scène](bruit-estimateurs.md) (Ponomarenko,
+Elle complète les [estimateurs sur scène](bruit-estimateurs/index.md) (Ponomarenko,
 ondelettes, patchs plats, PCA), qui sont comparés au §5.
 
 **Statut** : validée sur simulation (`tests/test_variogram.py`, 11 tests ;
@@ -141,7 +141,7 @@ défaut (`min_nugget_fraction`).
 3. **Sélection** des 50 % de tuiles les plus lisses (`keep_fraction`), sur
    l'énergie de gradient de la tuile **lissée** par une gaussienne σ = 3 px.
    Le lissage rend le critère presque insensible au bruit, ce qui évite le
-   biais de tri décrit pour les [estimateurs sur scène](bruit-estimateurs.md#biais-résiduel-des-méthodes-par-sélection-de-patchs) (retenir les tuiles où le bruit est
+   biais de tri décrit pour les [estimateurs sur scène](bruit-estimateurs/methodes.md#biais-résiduel-des-méthodes-par-sélection-de-patchs) (retenir les tuiles où le bruit est
    faible par hasard) ; il écarte les tuiles traversées par un bord d'objet.
 4. **γ(1), γ(2), γ(3)** dans chaque tuile, le long des lignes et des
    colonnes, corrigés du retrait du plan (§3.2).
@@ -397,7 +397,7 @@ défaut, 8 réalisations.
 | rayures de colonnes (σ = 1,5) | +31 % | -2 % | +0 % | -3 % | -25 % | 1.01 |
 
 (Les biais de `flat_patches` et `pca_estimate` sur scène lisse sont le
-biais de tri documenté pour les [estimateurs sur scène](bruit-estimateurs.md#biais-résiduel-des-méthodes-par-sélection-de-patchs).)
+biais de tri documenté pour les [estimateurs sur scène](bruit-estimateurs/methodes.md#biais-résiduel-des-méthodes-par-sélection-de-patchs).)
 
 ### 5.2 Principe des méthodes comparées
 

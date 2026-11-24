@@ -99,7 +99,7 @@ Deux limites hautes coexistent :
 La première atteinte détermine la saturation. Dans les deux cas, la
 variance s'effondre près du plafond : la PTC s'infléchit puis chute, d'où
 l'exclusion des niveaux proches de la saturation dans l'ajustement (voir
-[Non-linéarité aux extrêmes de luminance](../bruit-estimateurs.md#non-linéarité-aux-extrêmes-de-luminance)). En bas, le
+[Non-linéarité aux extrêmes de luminance](../bruit-estimateurs/mesure.md#non-linéarité-aux-extrêmes-de-luminance)). En bas, le
 convertisseur écrête à 0, ce que l'offset évite en pratique.
 
 ## 2.4 Offset

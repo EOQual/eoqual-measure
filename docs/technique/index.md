@@ -8,7 +8,7 @@ dans les [notes de version](../changelog.md).
 | Document | Contenu | Module |
 |---|---|---|
 | [MTF par bord incliné](mtf/index.md) | Orientation du bord, quatre estimateurs de MTF, support Bayer, CLI | `eoqual.measure.mtf` |
-| [Variance du bruit : estimateurs sur scène](bruit-estimateurs.md) | Six estimateurs par zones homogènes, ondelettes ou DCT, courbe bruit-luminance | `eoqual.measure.noise` |
+| [Variance du bruit : estimateurs sur scène](bruit-estimateurs/index.md) | Six estimateurs par zones homogènes, ondelettes ou DCT, courbe bruit-luminance | `eoqual.measure.noise` |
 | [Variance du bruit et SNR par le variogramme](bruit-variogramme.md) | Pépite du variogramme, fiabilité, rayures, modèle a + b·μ | `eoqual.measure.noise` |
 | [Strehl et énergie encerclée](psf-strehl.md) | Rapport de Strehl et EE(r) sur une source ponctuelle | `eoqual.measure.psf` |
 | [Mesures radiométriques](radiometrie/index.md) | Obscurité, PTC, PRNU, linéarité, défauts, convertisseur, push broom, bruit spatial, NPS, contraste | `eoqual.measure.radiometry`, `noise.spectrum`, `contrast` |
@@ -22,7 +22,7 @@ produites par un script de `examples/`, cité dans la légende.
 :maxdepth: 2
 
 mtf/index
-bruit-estimateurs
+bruit-estimateurs/index
 bruit-variogramme
 psf-strehl
 radiometrie/index

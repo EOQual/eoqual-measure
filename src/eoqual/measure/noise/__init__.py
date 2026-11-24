@@ -14,7 +14,7 @@ Exemple
 >>> from eoqual.measure.noise import variogram_noise
 >>> vg = variogram_noise(image)                  # pépite, SNR, fiabilité
 
-Voir ``docs/technique/bruit-estimateurs.md`` (pour l'estimation de la
+Voir ``docs/technique/bruit-estimateurs/index.md`` (pour l'estimation de la
 variance, partie IV, chapitre 12, pour le spectre et les bruits
 structurés, chapitre 14 pour le variogramme).
 """

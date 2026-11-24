@@ -10,7 +10,7 @@ par la courbe de transfert photonique (`photon_transfer_curve`).
 Ces trois mesures partagent le même principe : **séparer le temporel du spatial** sur des acquisitions
 contrôlées (obscurité, champs uniformes) en exploitant la répétition des
 poses, au lieu d'estimer le bruit dans une seule image comme le fait
-`noise_variance` ([estimateurs sur scène](../bruit-estimateurs.md)).
+`noise_variance` ([estimateurs sur scène](../bruit-estimateurs/index.md)).
 
 Chaque résultat est **typé** (dataclass) et porte ses **incertitudes-types**,
 calculées analytiquement. Elles servent à la fois de barres d'erreur et de

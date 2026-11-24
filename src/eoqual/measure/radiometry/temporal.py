@@ -3,7 +3,7 @@
 
 Entrée : paire ou pile de champs uniformes de même niveau. Le bruit spatial
 fixe (DSNU, PRNU) est éliminé par différence (paire) ou par variance
-temporelle pixel à pixel (pile). Voir REFERENCE_TECHNIQUE.md, partie IV, chapitre 3.
+temporelle pixel à pixel (pile). Voir docs/technique/radiometrie/03-obscurite-ptc.md.
 """
 
 from __future__ import annotations

@@ -5,7 +5,7 @@ Pour chaque scène (exposant β, contraste c, flou optique σ_psf), cinq
 images de 1 024 × 513 à 200, 600, 1 200, 2 000 et 3 000 DN, et l'on
 compare la pente a mesurée à la vérité 1/K, en unités de son incertitude
 u(a), ainsi que le rapport de cohérence. Sortie : tableau Markdown repris
-dans REFERENCE_TECHNIQUE.md, partie IV, §10.4.
+dans docs/technique/radiometrie/10-pushbroom-snr.md, §10.4.
 
 Usage : python examples/pushbroom_texture_bias_study.py
 """

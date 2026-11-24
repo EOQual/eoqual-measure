@@ -4,7 +4,7 @@
 SNR(μ) = μ / σ(μ), σ²(μ) = a + b·μ (a plancher, b pente), avec l'incertitude propagée de la
 covariance de (a, b). Fonction utilitaire : elle s'applique au résultat
 de toute mesure qui fournit a, b et leur covariance (`measure_ptc`,
-`measure_pushbroom_noise`). Voir REFERENCE_TECHNIQUE.md, partie IV, chapitre 10.
+`measure_pushbroom_noise`). Voir docs/technique/radiometrie/10-pushbroom-snr.md.
 """
 
 from __future__ import annotations

@@ -6,7 +6,7 @@ composantes fixes (écarts-types σ_r, σ_c, σ_p) et e un résidu de bruit
 temporel indépendant de variance v connue (par exemple σ²_temp/K pour une
 moyenne de K poses).
 
-Estimateurs sans biais (voir REFERENCE_TECHNIQUE.md, partie IV, §2.7) :
+Estimateurs sans biais (voir docs/technique/radiometrie/02-fondements.md, §2.7) :
 
     R_i = moyenne de la ligne i,  C_j = moyenne de la colonne j
     P_ij = M_ij − R_i − C_j + moyenne(M)

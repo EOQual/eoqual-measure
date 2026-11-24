@@ -56,5 +56,9 @@ PYTHONPATH=src pytest tests
 ## Documentation
 
 Toute mesure nouvelle ou modifiée doit rester reflétée dans `README.md`
-(catalogue) et `REFERENCE_TECHNIQUE.md` (principe, implémentation,
-limites).
+(catalogue) et dans son document de `docs/technique/` (principe, mise en
+œuvre, validation, limites). Ces documents décrivent l'état présent, sans
+dates ni numéros de version : ce qui change d'une version à l'autre va dans
+`CHANGELOG.md`, et une variante de méthode écartée se décrit au présent,
+dans la section « Variantes écartées » (ou « Choix de conception ») du
+document. Construction locale du site : `make html` dans `docs/`.

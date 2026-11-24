@@ -7,7 +7,7 @@ le long des lignes, sur la ligne moyenne : résidu de bruit spatial fixe
 (FPN), séparé en basses fréquences (BF : vignettage mal corrigé, gains à
 grande échelle) et hautes fréquences (HF : résidu détecteur à détecteur),
 chaque composante corrigée de sa part de bruit temporel moyenné. Voir
-REFERENCE_TECHNIQUE.md, partie IV, chapitre 11.
+docs/technique/radiometrie/11-bruit-spatial-egalisation.md.
 """
 
 from __future__ import annotations

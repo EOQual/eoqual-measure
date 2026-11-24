@@ -10,7 +10,7 @@ voisins). Un bruit blanc garde sa variance au travers du filtre normé ;
 une scène, dont le spectre décroît et que l'optique a déjà filtrée, n'en
 laisse passer qu'une petite part. Les statistiques sont calculées par
 segments de L lignes, dont le signal moyen donne l'abscisse de σ²(μ).
-Voir REFERENCE_TECHNIQUE.md, partie IV, chapitre 10.
+Voir docs/technique/radiometrie/10-pushbroom-snr.md.
 """
 
 from __future__ import annotations

@@ -7,7 +7,7 @@ du pas de quantification : fond lisse ou rampe couvrant la plage de
 codes, avec un bruit de plusieurs pas. Le nombre d'occurrences d'un code
 est alors proportionnel à sa largeur : DNL_c = n_c / n̂_c − 1, où n̂_c est
 la densité attendue, estimée en lissant l'histogramme. Voir
-REFERENCE_TECHNIQUE.md, partie IV, chapitre 9.
+docs/technique/radiometrie/09-convertisseur.md.
 """
 
 from __future__ import annotations

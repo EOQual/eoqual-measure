@@ -10,7 +10,7 @@ TRUE_VARIANCE = 25.0
 
 # Tolérances relatives : les méthodes par sélection de patchs/segments
 # sous-estiment de 15 à 35 % sur scène lisse (biais documenté dans
-# REFERENCE_TECHNIQUE.md, « Biais résiduel ») ; les estimateurs sans
+# docs/technique/bruit-estimateurs.md, « Biais résiduel ») ; les estimateurs sans
 # sélection sont attendus à ~5 %.
 TOLERANCES = {
     "wavelets": 0.05,

@@ -13,7 +13,7 @@ température, lueur d'amplificateur.
   décroissant exponentiellement avec la distance au coin (0, 0) où est
   placé l'amplificateur.
 
-Voir REFERENCE_TECHNIQUE.md, partie V, §2.6.
+Voir docs/technique/simulateur.md, §2.6.
 """
 
 from __future__ import annotations

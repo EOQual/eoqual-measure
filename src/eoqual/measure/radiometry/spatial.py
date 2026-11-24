@@ -5,7 +5,7 @@ Entrée : pile matricielle de champs uniformes (K, H, W), zone uniforme
 d'une image push broom (M, W), ou zone uniforme d'une image whisk broom
 (n_balayages·k, W). Le bruit spatial est la dispersion de la
 moyenne temporelle (pile) ou de la ligne moyenne (push broom), corrigée du
-bruit temporel résiduel. Voir REFERENCE_TECHNIQUE.md, partie IV, chapitre 11.
+bruit temporel résiduel. Voir docs/technique/radiometrie/11-bruit-spatial-egalisation.md.
 """
 
 from __future__ import annotations

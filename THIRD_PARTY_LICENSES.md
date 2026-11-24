@@ -37,7 +37,7 @@ Licences relevées dans les métadonnées des paquets installés
 ## 3. Provenance du code
 
 Tout le code est écrit par l'auteur. Les méthodes implémentées sont
-publiées ; leurs références figurent dans `REFERENCE_TECHNIQUE.md`.
+publiées ; leurs références figurent dans les documents de `docs/technique/`.
 
 | Sous-paquet | Méthodes | Références principales | Statut |
 |---|---|---|---|
@@ -49,5 +49,5 @@ publiées ; leurs références figurent dans `REFERENCE_TECHNIQUE.md`.
 | `noise/spectrum.py` | NPS de Welch, détection de raies (seuils Gamma), bruit de ligne | Welch (1967) ; ISO 15739 ; Moisan (2011), via `eoqual.core.fourier.perdecomp` | 🟢 |
 | `contrast/` | Contraste sur bruit, seuil d'Otsu | Otsu (1979) | 🟢 |
 | `synthetic/` — simulateur de capteur (`sensor`, `patterns`, `scene`, `dark`, `response`, `temporal_effects`, `processing`) | Modèle de pixel EMVA, synthèse spectrale 1/f^β, scènes fBm, courant d'obscurité, non-linéarité, RTS, convertisseur à pas inégaux | EMVA 1288 ; Downey, *Think DSP* (CC-BY 4.0, idée de la synthèse spectrale, aucun code repris) ; guide CCD d'Astropy (BSD-3, modèle d'image artificielle, aucun code repris) | 🟢 |
-| `resources/modele_pixel_emva.{svg,png}` | Schéma du modèle de pixel | Redessiné par l'auteur d'après EMVA 1288 et une figure de K. Douglass (« Modeling noise for image simulations ») ; aucune image reprise | 🟢 |
+| `docs/technique/figures/modele_pixel_emva.{svg,png}` | Schéma du modèle de pixel | Redessiné par l'auteur d'après EMVA 1288 et une figure de K. Douglass (« Modeling noise for image simulations ») ; aucune image reprise | 🟢 |
 | `config.py`, `runner.py`, `noise/estimate.py`, `mtf/__init__.py`, tests | — | — | 🟢 |

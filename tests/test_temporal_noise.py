@@ -77,7 +77,7 @@ def test_input_checks(sensor):
 def test_pair_source_fluctuation_bias(eps):
     """
     Fluctuation multiplicative ε de la source entre les deux poses :
-    biais ≈ ε²·var_spatiale(x₁)/2 (REFERENCE_TECHNIQUE.md, partie IV, §3.2.3).
+    biais ≈ ε²·var_spatiale(x₁)/2 (docs/technique/radiometrie/03-obscurite-ptc.md, §3.2.3).
     """
     s = MatrixSensor(SensorParams(seed=9 + SEED_OFFSET, prnu_pixel=0.03))
     t = s.truth

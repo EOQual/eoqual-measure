@@ -7,7 +7,7 @@ générée par une mire synthétique fournie par l'appelant, avec plusieurs
 répétitions Monte-Carlo par point de grille, et agrège les résultats.
 
 Couvre trois études (voir §12.1 de la partie I de
-`REFERENCE_TECHNIQUE.md`) : effet de l'angle,
+`docs/technique/mtf-bord-incline.md`, §8.12) : effet de l'angle,
 effet du bruit, comparaison des algorithmes (temps de calcul, erreur
 systématique).
 
@@ -75,7 +75,7 @@ class SensitivityGrid:
         Bande de fréquence `(f_min, f_max)`, en `f/fe`, sur laquelle
         calculer le RMSE de la MTF -- exclure les hautes fréquences où
         le signal théorique est proche de 0 et où seul le bruit de
-        mesure domine (voir §9.3 de la partie I de REFERENCE_TECHNIQUE.md).
+        mesure domine (voir §9.3 de docs/technique/mtf-bord-incline.md).
     seed_offset :
         Décalage appliqué aux graines (pour rendre plusieurs études
         reproductibles indépendamment).

@@ -11,7 +11,7 @@ de pose, ou niveaux de référence), et une obscurité. On mesure :
 
 Une non-linéarité commune à tous les pixels ne se voit pas par
 comparaison relative entre pixels (égalisation) : seule une référence
-externe d'exposition la révèle. Voir REFERENCE_TECHNIQUE.md, partie IV, chapitre 6.
+externe d'exposition la révèle. Voir docs/technique/radiometrie/06-linearite.md.
 """
 
 from __future__ import annotations

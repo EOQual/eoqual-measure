@@ -1,7 +1,7 @@
 """
 Étude : biais de la pépite du variogramme selon la scène et le bruit.
 
-Produit les tableaux 14.1 à 14.5 de REFERENCE_TECHNIQUE.md, partie IV, chapitre 14 :
+Produit les tableaux 1 à 5 de docs/technique/bruit-variogramme.md :
 
 1. scènes fractales (fBm, β = 2,5 à 4), avec ou sans flou optique, à deux
    contrastes : biais relatif de la pépite (modèles linéaire et
@@ -52,7 +52,7 @@ def fmt(m: float, u: float, pct: bool = True) -> str:
 
 
 def table_fbm() -> None:
-    print("\n### Tableau 14.1 — scènes fractales, bruit blanc σ = 2 DN (σ² = 4 DN²)\n")
+    print("\n### Tableau 1 — scènes fractales, bruit blanc σ = 2 DN (σ² = 4 DN²)\n")
     print("| β | Flou optique σ_PSF | Écart-type de scène (DN) | Biais, modèle linéaire | "
           "Biais, modèle quadratique | F | Fiable |")
     print("|---|---|---|---|---|---|---|")
@@ -76,7 +76,7 @@ def table_fbm() -> None:
 
 
 def table_urban() -> None:
-    print("\n### Tableau 14.2 — scène urbaine (aplats à bords francs), bruit blanc σ = 2 DN\n")
+    print("\n### Tableau 2 — scène urbaine (aplats à bords francs), bruit blanc σ = 2 DN\n")
     print("| Taille des tuiles | Fraction retenue | Biais, modèle linéaire | F | Fiable |")
     print("|---|---|---|---|---|")
     for tile in (64, 32, 16):
@@ -93,7 +93,7 @@ def table_urban() -> None:
 
 
 def table_pure_noise() -> None:
-    print("\n### Tableau 14.4 — bruit blanc seul : biais propre de l'estimateur (60 tirages)\n")
+    print("\n### Tableau 4 — bruit blanc seul : biais propre de l'estimateur (60 tirages)\n")
     print("| Taille des tuiles | Fraction retenue | Biais | Incertitude d'une mesure (u/σ²) |")
     print("|---|---|---|---|")
     for tile in (16, 64):
@@ -109,7 +109,7 @@ def table_pure_noise() -> None:
 
 
 def table_correlated() -> None:
-    print("\n### Tableau 14.3 — bruit corrélé (bruit blanc σ = 2 DN filtré par une gaussienne)\n")
+    print("\n### Tableau 3 — bruit corrélé (bruit blanc σ = 2 DN filtré par une gaussienne)\n")
     print("| Filtre σ_f (pixels) | Variance du bruit par pixel (DN²) | Pépite (DN²) | F | Fiable |")
     print("|---|---|---|---|---|")
     for sf in (0.0, 0.3, 0.5, 0.8, 1.2):
@@ -129,7 +129,7 @@ def table_correlated() -> None:
 
 
 def table_comparison() -> None:
-    print("\n### Tableau 14.5 — comparaison des estimateurs sur scène (biais relatif de σ², σ = 2 DN)\n")
+    print("\n### Tableau 5 — comparaison des estimateurs sur scène (biais relatif de σ², σ = 2 DN)\n")
     cases = {
         "lisse (β = 4)": lambda rng: natural_scene(SHAPE, 1000.0, rng, contrast=0.02, beta=4.0).photons
         + rng.normal(0.0, SIGMA, SHAPE),

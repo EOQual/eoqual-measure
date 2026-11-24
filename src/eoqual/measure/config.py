@@ -15,7 +15,7 @@ lesquelles elle s'appuie, et les références. Les entrées ``"planned"``
 fixent l'emplacement et le contrat visés pour les mesures à venir ;
 voir ``CONTRIBUTING.md`` pour en ajouter une. Les mesures radiométriques
 (famille ``radiometry``, spectres de ``noise``, ``contrast``) sont décrites
-dans ``REFERENCE_TECHNIQUE.md``, partie IV.
+dans ``docs/technique/radiometrie/``.
 """
 
 from collections import OrderedDict

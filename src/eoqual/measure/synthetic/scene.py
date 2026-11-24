@@ -9,7 +9,7 @@ solaire) et d'une texture fractale (fBm) de spectre 1/f^β :
 
 avec u, v ∈ [−½, ½] les coordonnées réduites le long et en travers de la
 trace, T un champ `power_law_noise` d'écart-type 1 et c le contraste
-relatif de la texture. Voir REFERENCE_TECHNIQUE.md, partie V, §2.3.
+relatif de la texture. Voir docs/technique/simulateur.md, §2.3.
 """
 
 from __future__ import annotations

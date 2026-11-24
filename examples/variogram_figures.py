@@ -1,9 +1,9 @@
 """
-Figures du chapitre 14 de la partie IV (variogramme) : principe, chaîne de
+Figures de docs/technique/bruit-variogramme.md : principe, chaîne de
 calcul, extrapolation à l'origine, biais en fonction de la fraction de
 pépite, pièges. Données simulées, graines fixées.
 
-Usage : python examples/variogram_figures.py  →  resources/variogram_*.png
+Usage : python examples/variogram_figures.py  →  docs/technique/figures/variogram_*.png
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ from matplotlib.patches import FancyArrowPatch, FancyBboxPatch  # noqa: E402
 from eoqual.measure.noise import variogram, variogram_noise  # noqa: E402
 from eoqual.measure.synthetic.scene import natural_scene  # noqa: E402
 
-OUT = Path(__file__).resolve().parents[1] / "resources"
+OUT = Path(__file__).resolve().parents[1] / "docs" / "technique" / "figures"
 SIGMA = 2.0
 SHAPE = (512, 512)
 

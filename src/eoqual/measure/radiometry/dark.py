@@ -6,7 +6,7 @@ température.
 `dark_frame` : pile de K images d'obscurité (capteur matriciel) ou bloc
 de M lignes d'obscurité (push broom, un détecteur par colonne), même
 temps de pose. `dark_current` : piles d'obscurité à plusieurs temps de
-pose (et températures). Voir REFERENCE_TECHNIQUE.md, partie IV, chapitres 3 et 4.
+pose (et températures). Voir docs/technique/radiometrie/, chapitres 3 et 4.
 """
 
 from __future__ import annotations
@@ -154,7 +154,7 @@ def measure_dark_frame(
 def _u_sigma(s2: float, v: float, n: int, k: float) -> float:
     """
     Incertitude-type de √(var(carte) − v) par rapport à la carte réalisée :
-    Var ≈ [4·S·v + 2v²·(1 + 1/(K − 1))]/n (REFERENCE_TECHNIQUE.md, partie IV, §3.2.1).
+    Var ≈ [4·S·v + 2v²·(1 + 1/(K − 1))]/n (docs/technique/radiometrie/03-obscurite-ptc.md, §3.2.1).
     """
     var_d = (4.0 * max(s2, 0.0) * v + 2.0 * v**2 * (1.0 + 1.0 / max(k - 1, 1))) / n
     sigma = np.sqrt(max(s2, 0.0))

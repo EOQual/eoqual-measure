@@ -1,6 +1,7 @@
 name: Documentation
 
-# Construit la documentation Sphinx/autoapi et la publie sur GitHub Pages
+# Construit la documentation (documents techniques MyST, notes de version,
+# API autoapi) et la publie sur GitHub Pages
 # à chaque push sur main. Nécessite d'avoir activé, une seule fois, dans
 # Settings > Pages > Source : "GitHub Actions" pour ce dépôt.
 
@@ -41,7 +42,7 @@ jobs:
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: docs/build/html
+          path: docs/_build/html
 
   deploy:
     needs: build

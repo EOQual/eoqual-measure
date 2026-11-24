@@ -16,9 +16,10 @@ source ponctuelle) ou le protocole est connu, et le résultat est une
 grandeur physique du système — FTM, variance de bruit, gain — et non un
 score de qualité.
 
-Voir **[REFERENCE_TECHNIQUE.md](REFERENCE_TECHNIQUE.md)** pour le détail
-de chaque mesure (principe, architecture, limites, historique des
-corrections, bibliographie) et
+Voir les **[documents techniques](docs/technique/index.md)** pour le
+détail de chaque mesure (principe, mise en œuvre, validation, limites,
+bibliographie), **[CHANGELOG.md](CHANGELOG.md)** pour l'évolution d'une
+version à l'autre et
 **[THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)** pour la provenance
 du code et l'audit des licences.
 
@@ -148,9 +149,9 @@ données réelles et notebook d'exemple sur une orthophotographie
 Les mesures sont déclarées dans `config.py::MEASURES_CONFIGS` avec leur
 emplacement et leur contrat ; une mesure prévue (🔜) y figure avant d'être
 implémentée, pour que son ajout ne demande aucune réorganisation. Les
-mesures radiométriques sont décrites dans `REFERENCE_TECHNIQUE.md`,
-partie IV (tableau de synthèse par type de capteur, matriciel, push broom
-ou whisk broom), et leur simulateur dans la partie V.
+mesures radiométriques sont décrites dans `docs/technique/radiometrie/`
+(tableau de synthèse par type de capteur, matriciel, push broom ou whisk
+broom), et leur simulateur dans `docs/technique/simulateur.md`.
 
 ## Architecture
 
@@ -205,6 +206,23 @@ Principes :
 
 Le calcul ESF → LSF → MTF est partagé via `eoqual-core`
 (`eoqual.core.edge`), sans dépendance directe entre les deux modules.
+
+## Documentation
+
+```
+docs/
+├── conf.py, Makefile    moteur Sphinx (MyST) : `make html` → docs/_build/html
+├── index.md             page d'accueil du site
+├── technique/           documents techniques, un par mesure ou famille
+│   ├── radiometrie/     un fichier par chapitre, formulaire, bibliographie
+│   └── figures/         figures des documents (scripts dans examples/)
+├── changelog.md         inclut CHANGELOG.md
+└── api/                 référence de l'API, générée (non versionnée)
+```
+
+Les documents se lisent tels quels sur GitHub ; le site (documents,
+notes de version, API) est publié sur GitHub Pages à chaque push sur
+`main` (`.github/workflows/docs.yml`).
 
 ## Licence
 

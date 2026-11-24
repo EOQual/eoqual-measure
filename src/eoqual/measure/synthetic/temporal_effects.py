@@ -4,7 +4,7 @@ rayons cosmiques.
 
 Ils s'ajoutent à la chaîne S0 sans la modifier : chacun tire dans son
 propre flux aléatoire, et tous sont nuls par défaut. Voir
-REFERENCE_TECHNIQUE.md, partie V, §2.5.
+docs/technique/simulateur.md, §2.5.
 
 Conventions de coordonnées : i est l'indice de ligne (matriciel : ligne
 de la matrice, lue après la précédente ; push broom : ligne acquise, donc

@@ -9,7 +9,7 @@ valider les mesures sans donnée réelle :
   `WhiskbroomSensor`) : bruit de photons, de lecture et d'obscurité,
   DSNU/PRNU, non-linéarité, défauts, bruits structurés, convertisseur ;
   scènes naturelles et traitements à fonction de transfert connue.
-  Voir REFERENCE_TECHNIQUE.md, partie V.
+  Voir docs/technique/simulateur.md.
 """
 from eoqual.measure.synthetic.noise import add_noise, generate_clean_image  # noqa: F401
 from eoqual.measure.synthetic.patterns import (  # noqa: F401

@@ -4,7 +4,7 @@
 Entrée : une paire (ou pile) de champs uniformes par niveau d'éclairement,
 et une pile d'obscurité. À chaque niveau, `measure_temporal_noise` donne
 (μ, σ²) ; on ajuste σ²(μ) = a + b·μ sur la plage linéaire (a plancher, b
-pente), d'où le gain K = 1/b (e⁻/DN) et le bruit de lecture. Voir REFERENCE_TECHNIQUE.md, partie IV, chapitre 3.
+pente), d'où le gain K = 1/b (e⁻/DN) et le bruit de lecture. Voir docs/technique/radiometrie/03-obscurite-ptc.md.
 """
 
 from __future__ import annotations

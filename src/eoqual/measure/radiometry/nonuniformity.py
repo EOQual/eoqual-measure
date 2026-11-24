@@ -6,7 +6,7 @@ carte de réponse est la moyenne temporelle corrigée de l'obscurité ; sa
 dispersion relative, corrigée du bruit temporel résiduel, est la PRNU.
 Une surface polynomiale lisse sépare la composante basse fréquence
 (vignettage, éclairement non uniforme) de la PRNU haute fréquence. Voir
-REFERENCE_TECHNIQUE.md, partie IV, chapitre 5.
+docs/technique/radiometrie/05-prnu.md.
 """
 
 from __future__ import annotations

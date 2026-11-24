@@ -14,12 +14,24 @@ Non publié
         fraction de pépite F = σ²/γ(1) et verdict `reliable`, modèle
         σ² = a + b·μ compatible avec `snr_at_levels`. Fonction `variogram`
         pour tracer la courbe.
-    -   Référence technique, partie IV, chapitre 14 (principe, figures,
+    -   Document `docs/technique/bruit-variogramme.md` (principe, figures,
         validation, comparaison avec Ponomarenko et les autres
         estimateurs, cas réel) ; tests `tests/test_variogram.py` (11,
         robustes sur 30 graines) ; étude `examples/variogram_study.py` ;
         figures `examples/variogram_figures.py` ; notebook
         `examples/real_scene_variogram.ipynb`.
+    -   **Documentation réorganisée** : `REFERENCE_TECHNIQUE.md` est
+        découpé en documents spécialisés dans `docs/technique/` (MTF,
+        estimateurs de bruit, variogramme, Strehl, mesures radiométriques
+        avec un fichier par chapitre, simulateur), publiés avec l'API et
+        les notes de version par Sphinx et MyST (`docs/`). Les historiques
+        de corrections sont retirés des documents : ce qui change d'une
+        version à l'autre est dans ce fichier, les variantes de méthode
+        écartées sont décrites au présent dans chaque document. Les
+        figures passent de `resources/` à `docs/technique/figures/`.
+    -   Exemples de la courbe bruit-luminance (estimateurs de bruit)
+        remis dans la notation σ² = a + b·I de 0.4.0 : ils inversaient
+        encore a et b.
 
 0.4.0 (2026-11-18)
 

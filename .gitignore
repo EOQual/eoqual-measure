@@ -98,10 +98,10 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/build/
-!docs/build/.gitkeep
+docs/_build/
+
 # RST régénérés à chaque build par sphinx-autoapi (autoapi_dirs dans conf.py)
-docs/source/autoapi/
+docs/api/
 
 # PyBuilder
 target/

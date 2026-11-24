@@ -18,8 +18,7 @@ d'Airy de même grille (rapport de Strehl).
 Briques numériques : :mod:`eoqual.core.psf` (Airy, Strehl, énergie
 encerclée) et :mod:`eoqual.core.fourier` (translation sous-pixel).
 Validation : :class:`eoqual.measure.synthetic.SyntheticPSF` (aberrations
-de Zernike connues, Strehl exact). Voir ``REFERENCE_TECHNIQUE.md``,
-partie III.
+de Zernike connues, Strehl exact). Voir ``docs/technique/psf-strehl.md``.
 """
 from __future__ import annotations
 

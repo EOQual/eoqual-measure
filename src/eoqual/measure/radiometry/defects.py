@@ -22,7 +22,7 @@ Les pixels chauds, souvent saturés dans les poses longues (code constant,
 réponse apparente nulle), sont exclus des autres classes. La médiane
 locale (fenêtre `window`, 5 par défaut) rend le critère de réponse
 insensible au vignettage et aux poussières : il ne retient que des
-pixels isolés. Voir REFERENCE_TECHNIQUE.md, partie IV, chapitre 7.
+pixels isolés. Voir docs/technique/radiometrie/07-pixels-defectueux.md.
 """
 
 from __future__ import annotations

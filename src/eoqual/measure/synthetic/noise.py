@@ -59,7 +59,7 @@ def add_noise(
     constante) et quantification/plancher de bruit en basse luminance (le
     pas de quantification devient non négligeable devant l'écart-type du
     bruit). Simuler ces effets permet d'étudier explicitement l'écart à la
-    linéarité mentionné par l'utilisateur, plutôt que de le supposer.
+    linéarité aux extrêmes de luminance, plutôt que de le supposer.
 
     Parameters
     ----------

@@ -2,7 +2,7 @@
 
 Application des 16 métriques à des acquisitions réelles, sous forme de
 notebooks d'exemple (`examples/`), en complément de la validation sur
-simulation (`REFERENCE_TECHNIQUE.md`, partie IV, annexe B).
+simulation (`docs/technique/radiometrie/`, sections « Tests »).
 
 ## 1. Principes
 
@@ -118,7 +118,7 @@ indicatifs : un écart est d'abord analysé.
     doublement ≈ 4 à 5 K.
 
   Une valeur intermédiaire indique un mélange des deux mécanismes, que la
-  loi à un seul terme ne décrit pas (`REFERENCE_TECHNIQUE.md`, partie IV, §4.5).
+  loi à un seul terme ne décrit pas (`docs/technique/radiometrie/04-courant-obscurite.md`, §4.5).
 - **C4** : pixels chauds de deux sessions, avec un recouvrement attendu
   ≥ 90 %, puisqu'ils sont stables.
 - **Pièges** : temps de pose trop courts (courant noyé dans le bruit de
@@ -130,7 +130,7 @@ indicatifs : un écart est d'abord analysé.
 - **C1** : σ² par paire et σ² par pile au même niveau, à 3 u près.
 - **C2** : au niveau zéro (D1), σ² = b de `dark_frame`.
 - **Pièges** : fluctuation de la source entre poses (biais
-  ε²·var_spatiale/2, `REFERENCE_TECHNIQUE.md`, partie IV, §3.2.3), qu'on contrôle
+  ε²·var_spatiale/2, `docs/technique/radiometrie/03-obscurite-ptc.md`, §3.2.3), qu'on contrôle
   par le rapport des moyennes des deux poses.
 
 ### 4.4 `photon_transfer_curve` (F1 + D1)
@@ -152,7 +152,7 @@ indicatifs : un écart est d'abord analysé.
 
 - **C1** : PRNU à 2–3 niveaux. Sans non-linéarité, elle est constante ;
   avec une non-linéarité commune, elle suit le facteur
-  (1 − 2cx)/(1 − cx) (`REFERENCE_TECHNIQUE.md`, partie IV, §5.2), à rapprocher de
+  (1 − 2cx)/(1 − cx) (`docs/technique/radiometrie/05-prnu.md`, §5.2), à rapprocher de
   `linearity`.
 - **C2** : PRNU EMVA (plusieurs niveaux) comparée à la PRNU à un niveau.
 - **C3** : basses fréquences (vignettage) cohérentes avec l'optique
@@ -294,7 +294,7 @@ Un écart non expliqué conduit à l'une de ces suites :
   indicateur ;
 - **anomalie de la métrique** : la corriger, ajouter un test de
   non-régression sur simulation, et la consigner dans l'annexe A de la
-  partie IV de `REFERENCE_TECHNIQUE.md`.
+  `docs/technique/radiometrie/`.
 
 Chaque notebook se termine par un tableau récapitulatif des contrôles,
 « contrôle, résultat, verdict (cohérent / écart / non testable), suite ».

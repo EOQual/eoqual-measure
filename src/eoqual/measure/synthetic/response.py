@@ -14,7 +14,7 @@ pixels morts et bloqués.
 - Pixels morts : réponse nulle à la lumière (offset et bruit de lecture
   conservés) ; pixels bloqués : code constant, sans bruit.
 
-Voir REFERENCE_TECHNIQUE.md, partie V, §2.7.
+Voir docs/technique/simulateur.md, §2.7.
 """
 
 from __future__ import annotations

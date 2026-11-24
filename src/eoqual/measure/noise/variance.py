@@ -803,7 +803,7 @@ class NoiseVariance:
         """
         Estime la variance du bruit par la pépite du variogramme (voir
         :func:`eoqual.measure.noise.variogram.variogram_noise` et
-        REFERENCE_TECHNIQUE.md, partie IV, chapitre 14).
+        docs/technique/bruit-variogramme.md).
 
         Returns
         -------

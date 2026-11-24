@@ -15,7 +15,7 @@ extrapolation à h = 0, moyenne des tuiles. La dispersion entre tuiles
 donne l'incertitude ; la répartition des tuiles en luminance donne un
 modèle σ² = a + b·μ exploitable par `snr_at_levels`.
 
-Voir REFERENCE_TECHNIQUE.md, partie IV, chapitre 14.
+Voir docs/technique/bruit-variogramme.md.
 """
 
 from __future__ import annotations

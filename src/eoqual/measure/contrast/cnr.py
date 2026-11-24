@@ -6,7 +6,7 @@ moyenne et la variance des pixels de chaque plage d'**une** image : le
 bruit compte le bruit temporel et le bruit spatial fixe dans la plage.
 Distinct du SNR radiométrique μ/σ(μ) (`snr_model`). Les plages sont
 fournies (masques) ou détectées par le seuil d'Otsu, puis érodées pour
-écarter la transition floue entre les deux. Voir REFERENCE_TECHNIQUE.md, partie IV, chapitre 13.
+écarter la transition floue entre les deux. Voir docs/technique/radiometrie/13-contraste.md.
 """
 
 from __future__ import annotations

@@ -5,7 +5,7 @@
 p_FA = 10⁻³ par spectre ; pour chaque cas, nombre d'analyses avec au
 moins une fausse alarme, motifs manqués, erreurs de nature (fixe /
 temporel) et amplitude mesurée. Sortie : tableau Markdown repris dans
-REFERENCE_TECHNIQUE.md, partie IV, §12.4.
+docs/technique/radiometrie/12-nps-bruits-structures.md, §12.4.
 
 Usage : python examples/structured_noise_detection_study.py [n_capteurs] [fraction_min]
 """

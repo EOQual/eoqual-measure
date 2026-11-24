@@ -6,7 +6,7 @@ NPS 2D par imagettes (méthode de Welch) : retrait d'un plan, fenêtre de
 Hann (ou décomposition périodique + lisse de Moisan), |FFT|², moyenne.
 Normalisation : l'intégrale du NPS sur [−½, ½]² égale la variance, si
 bien qu'un bruit blanc σ² a un NPS plat de niveau σ² (DN²·pixel²). Voir
-REFERENCE_TECHNIQUE.md, partie IV, chapitre 12.
+docs/technique/radiometrie/12-nps-bruits-structures.md.
 """
 
 from __future__ import annotations
@@ -39,7 +39,7 @@ class NPSResult:
         Incertitude-type de chaque valeur : dispersion entre imagettes / √n.
         Avec la fenêtre de Hann et 50 % de recouvrement, le nombre de
         moyennes indépendantes mesuré en 2D vaut ≈ n, si bien que u_nps est
-        juste (REFERENCE_TECHNIQUE.md, partie IV, §12.2.2).
+        juste (docs/technique/radiometrie/12-nps-bruits-structures.md, §12.2.2).
     variance :
         Intégrale du NPS, mean(nps) : variance du bruit analysé.
     n_patches, patch_size :

@@ -3,7 +3,7 @@
 Ce chapitre réunit ce que toutes les métriques partagent : le modèle de pixel, les sources de
 bruit, la séparation du temporel et du spatial, l'incertitude des estimateurs et la
 décomposition ligne / colonne / pixel. Le simulateur qui produit les données de validation est
-décrit à part, dans le [simulateur de capteur](../simulateur.md).
+décrit à part, dans le [simulateur de capteur](../simulateur/index.md).
 
 ## 2.1 Le modèle linéaire d'un pixel (EMVA 1288)
 
@@ -75,7 +75,7 @@ entier le plus proche. Si le signal varie de plus d'environ un demi-pas
 autour du code (σ ≳ 0,5 DN), l'erreur d'arrondi est quasi uniforme sur
 [−½, ½] et indépendante du signal : sa variance vaut Δ²/12, soit 1/12 DN²
 pour un pas Δ = 1 DN. En dessous de ce seuil, l'erreur dépend du signal et
-le modèle additif ne tient plus ([simulateur, §7](../simulateur.md#7-limites-et-choix-de-modélisation)).
+le modèle additif ne tient plus ([simulateur, §7](../simulateur/validation.md#7-limites-et-choix-de-modélisation)).
 
 **Variance totale.** Les sources étant indépendantes, les variances
 s'ajoutent. En DN, et en notant μ = (μ_e)/K le signal au-dessus de l'offset :

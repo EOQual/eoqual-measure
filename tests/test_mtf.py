@@ -98,7 +98,7 @@ def test_bayer_planes_and_pixel_pitch(edge):
 
 
 # --------------------------------------------------------------------------
-# MTF du système et ouverture du pixel (docs/technique/mtf-bord-incline.md, §9.13)
+# MTF du système et ouverture du pixel (docs/technique/mtf/choix.md, §9.13)
 # --------------------------------------------------------------------------
 def _edge_pixelise(seed):
     gen = SyntheticSlantedEdge(nx=128, ny=128, angle_deg=5.0, sigma_psf=0.8, noise_level=0.002,

@@ -298,7 +298,7 @@ Liste des tests : §3.4.1.
 - *Linéarité* : estimée sur la plage de l'ajustement de la PTC, non sur
   5–95 % de la saturation comme dans EMVA 1288.
 - *Quantification* : la correction de 1/12 n'est valable que si
-  σ₀ ≳ 0,5 DN ([simulateur, §7](../simulateur.md#7-limites-et-choix-de-modélisation)).
+  σ₀ ≳ 0,5 DN ([simulateur, §7](../simulateur/validation.md#7-limites-et-choix-de-modélisation)).
 
 ## 3.6 Pistes
 

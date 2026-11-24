@@ -10,7 +10,7 @@ pas encore qualifiées sur données réelles.
 
 Dans ces pages, les renvois « §n » et « chapitre n » désignent les chapitres
 des mesures radiométriques ; le simulateur qui les valide a son propre
-document, [Simulateur de capteur](../simulateur.md).
+document, [Simulateur de capteur](../simulateur/index.md).
 
 ## 1. Introduction
 
@@ -29,7 +29,7 @@ luminance, réponse spectrale) est hors périmètre.
 Chaque métrique est une fonction qui prend des tableaux NumPy et renvoie
 un résultat typé (dataclass) portant ses **incertitudes-types**. Toutes ont
 été validées contre un simulateur de capteur à vérité connue, décrit dans
-le [simulateur de capteur](../simulateur.md). Elles sont **en cours de développement** : validées sur
+le [simulateur de capteur](../simulateur/index.md). Elles sont **en cours de développement** : validées sur
 données simulées, elles ne sont pas encore qualifiées sur données réelles
 (plan de tests : `examples/PLAN_TESTS_DONNEES_REELLES.md`).
 

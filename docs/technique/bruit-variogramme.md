@@ -79,7 +79,7 @@ Deux modèles sont proposés (`model`) :
 | `"quadratic"` | h = 1, 2, 3 | 3γ(1) − 3γ(2) + γ(3) | h + h² |
 
 La forme de γ_S près de l'origine dépend de la scène. Pour une texture
-fractale de spectre 1/f^β (le modèle de scène du [simulateur](simulateur.md)), γ_S(h) ∝
+fractale de spectre 1/f^β (le modèle de scène du [simulateur](simulateur/index.md)), γ_S(h) ∝
 h^(β−2) : linéaire pour β = 3, presque quadratique pour β = 4 ou une scène
 floutée par la FTM. Aucun modèle n'est exact pour toutes les scènes ; le
 biais résiduel vaut −[γ_S(0⁺) extrapolé], d'autant plus grand que la scène

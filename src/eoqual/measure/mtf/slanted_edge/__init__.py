@@ -7,7 +7,7 @@ estimateurs comparables), bootstrap, aberration chromatique latérale
 Architecture « template method + comparateur » : chaque étape a une
 classe de base et plusieurs implémentations interchangeables, exécutables
 côte à côte sur la même donnée (``EdgeOrientationComparator``,
-``MTFComparator``). Voir ``docs/technique/mtf-bord-incline.md``.
+``MTFComparator``). Voir ``docs/technique/mtf/index.md``.
 
 Les modules ``visualization`` (plotly) et ``sensitivity`` (pandas) ne sont
 pas importés ici : ils relèvent des extras ``plot``/``study``.

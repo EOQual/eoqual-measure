@@ -151,7 +151,7 @@ emplacement et leur contrat ; une mesure prévue (🔜) y figure avant d'être
 implémentée, pour que son ajout ne demande aucune réorganisation. Les
 mesures radiométriques sont décrites dans `docs/technique/radiometrie/`
 (tableau de synthèse par type de capteur, matriciel, push broom ou whisk
-broom), et leur simulateur dans `docs/technique/simulateur.md`.
+broom), et leur simulateur dans `docs/technique/simulateur/index.md`.
 
 ## Architecture
 

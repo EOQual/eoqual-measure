@@ -6,7 +6,7 @@ débruitage, compression à faible taux…) corrèle le bruit : un bruit blanc
 de variance σ² filtré par un noyau h a pour spectre σ²·|H(f)|². Ce module
 applique un noyau par convolution **circulaire** (FFT), pour que la
 relation soit exacte, et fournit |H|² sur la grille de fréquences ; c'est
-la vérité qui valide `noise_power_spectrum`. Voir docs/technique/simulateur.md, §2.5.
+la vérité qui valide `noise_power_spectrum`. Voir docs/technique/simulateur/modeles.md, §2.5.
 """
 
 from __future__ import annotations

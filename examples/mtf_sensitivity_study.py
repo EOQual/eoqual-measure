@@ -3,7 +3,7 @@
 """
 Étude de sensibilité complète, branchée sur `SyntheticSlantedEdge` :
 effet de l'angle, effet du bruit, comparaison des algorithmes
-d'orientation et de MTF (§8.12 de docs/technique/mtf-bord-incline.md).
+d'orientation et de MTF (§8.12 de docs/technique/mtf/guide.md).
 
 Usage
 -----
@@ -79,7 +79,7 @@ def angle_conversion_for(orientation: str):
     Conversion angle_deg (paramètre `SyntheticSlantedEdge`) -> convention
     des estimateurs (`atan2`, repliée dans [-90, 90]) -- voir docstring
     de `SensitivityGrid.true_angle_to_convention`, vérifiée
-    empiriquement (voir docs/technique/mtf-bord-incline.md, §8.12).
+    empiriquement (voir docs/technique/mtf/guide.md, §8.12).
     """
     if orientation == "vertical":
         return lambda a: fold_angle_deg(a - 90.0)
@@ -144,7 +144,7 @@ def main() -> None:
         n_repetitions=n_repetitions,
         # Bande de fréquence pour le RMSE de MTF : au-delà, le signal
         # théorique est proche de 0 et seul le bruit de mesure domine
-        # (voir §9.3 de docs/technique/mtf-bord-incline.md) -- resserrer encore
+        # (voir §9.3 de docs/technique/mtf/choix.md) -- resserrer encore
         # si sigma_psf est grand (MTF déjà proche de 0 à plus basse
         # fréquence).
         mtf_frequency_band=(0.02, min(0.35, 0.6 / max(args.sigma_psf, 0.5))),

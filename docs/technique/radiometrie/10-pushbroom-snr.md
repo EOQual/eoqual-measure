@@ -313,7 +313,7 @@ Liste des tests : §10.4.1.
    texture fBm a d'ailleurs trop de puissance à Nyquist pour qu'aucune
    mesure en une image ne la sépare du bruit, situation irréaliste pour un
    imageur : le simulateur applique donc une PSF optique à ses scènes
-   ([simulateur, §2.4](../simulateur.md#24-scènes-naturelles-et-optique-s2)).
+   ([simulateur, §2.4](../simulateur/modeles.md#24-scènes-naturelles-et-optique-s2)).
 3. *Rejet sur l'autocorrélation par défaut* : il biaise σ² de +0,5 % sur
    bruit pur (corrélation entre autocorrélation et s² d'un bruit filtré)
    et le rapport de cohérence de −0,5 %. Il reste une option

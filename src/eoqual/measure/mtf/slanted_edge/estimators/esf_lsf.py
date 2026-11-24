@@ -233,9 +233,9 @@ class GeometricESFBuilder:
     Largeur de bin : `"omni"` vs `"iso_cos"`
     -------------------------------------------
     Deux conventions de largeur de bin coexistent dans la littérature
-    [[Wu2022]](docs/technique/mtf-bord-incline.md, §10) (`Wu et
+    [[Wu2022]](docs/technique/mtf/references.md, §10) (`Wu et
     al., 2022`, qui bâtit sur le jeu de données de comparaison de
-    [[ViallefontRobinet2018]](docs/technique/mtf-bord-incline.md, §10)) :
+    [[ViallefontRobinet2018]](docs/technique/mtf/references.md, §10)) :
     - `"omni"` (défaut, comportement historique de cette classe) :
       largeur de bin FIXE `1/oversample`, indépendante de l'angle.
     - `"iso_cos"` : largeur de bin `cos(theta)/oversample`, qui RÉTRÉCIT
@@ -591,7 +591,7 @@ def fit_esf_tikhonov(
     Régularise l'ESF par une pénalisation de Tikhonov d'ordre 2 (lissage
     par courbure), pondérée par la précision de chaque bin, puis en tire
     la LSF par dérivation numérique de l'ESF régularisée -- inspiré de
-    Xie et al. (2018) [[Xie2018]](docs/technique/mtf-bord-incline.md, §10),
+    Xie et al. (2018) [[Xie2018]](docs/technique/mtf/references.md, §10),
     qui posent le problème comme l'estimation d'une ESF mal conditionnée
     par le bruit et le résolvent par régularisation de Tikhonov + poids
     de précision variables, via le principe variationnel.
@@ -655,7 +655,7 @@ def fit_esf_tikhonov(
     échantillonnée sur seulement 40 (grille par défaut initiale) à 80
     valeurs de λ amplifie fortement la moindre irrégularité
     d'échantillonnage, au point de déplacer le maximum de courbure
-    détecté -- voir §9.11 de docs/technique/mtf-bord-incline.md pour le cas
+    détecté -- voir §9.11 de docs/technique/mtf/choix.md pour le cas
     concret ayant motivé ce lissage (deux angles synthétiques très
     proches donnant des λ dans un rapport ~24×).
 
@@ -737,7 +737,7 @@ def fit_esf_tikhonov(
         # une opération bruyante -- exactement la même classe de
         # problème que celle déjà rencontrée et corrigée ailleurs dans
         # ce pipeline (biais de dérivation numérique, sur-lissage ESF,
-        # voir §9 de docs/technique/mtf-bord-incline.md). Observé concrètement
+        # voir §9 de docs/technique/mtf/choix.md). Observé concrètement
         # sur ce point précis : sur deux cas de test très proches (bord
         # synthétique à -4° et -5°, PSF identique), la courbure brute
         # sélectionnait des λ dans un rapport ~24x (14 contre 345),
@@ -863,7 +863,7 @@ class EsfLsfMTFEstimator(SlantedEdgeMTFEstimator):
     MTF du système, pixel compris. Jusqu'à la version 0.2.0, il divisait
     toujours par `sinc(f·pixel_pitch)` et renvoyait la MTF de l'optique
     seule ; ce retrait est devenu l'option `remove_pixel_aperture`
-    (docs/technique/mtf-bord-incline.md, §9.13).
+    (docs/technique/mtf/choix.md, §9.13).
 
     Parameters
     ----------
@@ -1017,7 +1017,7 @@ class EsfLsfMTFEstimator(SlantedEdgeMTFEstimator):
             mtf = MTFCorrections.derivative(freqs, mtf, lsf_dx)
         # MTF du système par défaut, comme les autres estimateurs ; le retrait
         # de l'ouverture du pixel (MTF de l'optique seule) est une option
-        # explicite (docs/technique/mtf-bord-incline.md, §1.5 et §9.13).
+        # explicite (docs/technique/mtf/theorie.md, §1.5 et §9.13).
         if self.remove_pixel_aperture:
             mtf = MTFCorrections.pixel_aperture(freqs, mtf, self.pixel_pitch)
         frequency = freqs * self.pixel_pitch  # cycles / pixel_pitch-unit

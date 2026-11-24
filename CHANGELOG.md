@@ -4,7 +4,10 @@
 
 Non publié
 
-:   -   **Nouvelle mesure `variogram_noise`** (`eoqual.measure.noise`) :
+:   -   Documents de la MTF et du simulateur découpés par thème dans
+        `docs/technique/mtf/` et `docs/technique/simulateur/` ; les
+        chapitres gardent leur numéro.
+    -   **Nouvelle mesure `variogram_noise`** (`eoqual.measure.noise`) :
         variance du bruit et SNR d'une image brute par la pépite du
         variogramme (Curran et Dungan, 1989), aussi accessible par
         `estimate_noise(image, "variogram")`. Tuiles de 16 pixels, retrait

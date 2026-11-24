@@ -2,6 +2,25 @@
 
 ## Version History
 
+Non publié
+
+:   -   **Nouvelle mesure `variogram_noise`** (`eoqual.measure.noise`) :
+        variance du bruit et SNR d'une image brute par la pépite du
+        variogramme (Curran et Dungan, 1989), aussi accessible par
+        `estimate_noise(image, "variogram")`. Tuiles de 16 pixels, retrait
+        d'un plan corrigé exactement, sélection des tuiles les plus lisses
+        sur un critère insensible au bruit, extrapolation linéaire ou
+        quadratique, pépite par direction (anisotropie : rayures),
+        fraction de pépite F = σ²/γ(1) et verdict `reliable`, modèle
+        σ² = a + b·μ compatible avec `snr_at_levels`. Fonction `variogram`
+        pour tracer la courbe.
+    -   Référence technique, partie IV, chapitre 14 (principe, figures,
+        validation, comparaison avec Ponomarenko et les autres
+        estimateurs, cas réel) ; tests `tests/test_variogram.py` (11,
+        robustes sur 30 graines) ; étude `examples/variogram_study.py` ;
+        figures `examples/variogram_figures.py` ; notebook
+        `examples/real_scene_variogram.ipynb`.
+
 0.4.0 (2026-11-18)
 
 :   -   **Modèle de bruit noté σ² = a + b·μ** (a plancher, b pente = 1/K),

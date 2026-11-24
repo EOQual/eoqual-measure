@@ -115,15 +115,18 @@ Exemples complets dans `examples/` : intercomparaison des estimateurs de
 bruit (validation synthétique ou images réelles, mode Bayer), étude de
 sensibilité MTF, génération de mires synthétiques, études de domaine de
 validité des mesures radiométriques (`pushbroom_texture_bias_study.py`,
-`structured_noise_detection_study.py`) et plan de tests sur données
-réelles.
+`structured_noise_detection_study.py`, `variogram_study.py`), figures du
+chapitre sur le variogramme (`variogram_figures.py`), plan de tests sur
+données réelles et notebook d'exemple sur une orthophotographie
+(`real_scene_variogram.ipynb`, image hors du projet).
 
 ## Catalogue des mesures
 
 | Mesure | Statut | Point d'entrée | Grandeurs | Algorithmes |
 |---|---|---|---|---|
 | `mtf_slanted_edge` | ✅ | `eoqual.measure.mtf.measure_mtf` | MTF(f), MTF@Nyquist, MTF50, FWHM, RER, angle, aberration chromatique latérale (Bayer) | Orientation : gradient, PCA (+RANSAC), phase de Fourier. MTF : spatial (dé-entrelacement), spectral (moindres carrés multi-répliques), ESF/LSF (numérique, sigmoïde, PCHIP, Tikhonov), corrélation spectrale. Bootstrap des lignes. |
-| `noise_variance` | ✅ | `eoqual.measure.noise.estimate_noise` | Variance (globale ou par classe de luminance), échantillons intra-image | `flat_patches`, `wavelets` (Donoho-Johnstone), `skimage_estimate_sigma`, `ponomarenko` (DCT), `adaptive_segmentation` (SLIC), `pca_estimate` |
+| `noise_variance` | ✅ | `eoqual.measure.noise.estimate_noise` | Variance (globale ou par classe de luminance), échantillons intra-image | `flat_patches`, `wavelets` (Donoho-Johnstone), `skimage_estimate_sigma`, `ponomarenko` (DCT), `adaptive_segmentation` (SLIC), `pca_estimate`, `variogram` |
+| `variogram_noise` | ✅ | `eoqual.measure.noise.variogram_noise` | Variance du bruit et SNR d'une image brute, modèle a + b·μ, fraction de pépite (fiabilité), anisotropie lignes/colonnes | Pépite du variogramme (Curran et Dungan, 1989) sur les tuiles les plus lisses, retrait du plan corrigé exactement |
 | `dark_frame` | ✅ | `eoqual.measure.radiometry.measure_dark_frame` | Offset, bruit à signal nul b, DSNU (ligne/colonne/pixel), stationnarité | Moyenne et variance temporelles, décomposition sans biais ; pile matricielle ou bloc push broom |
 | `dark_current` | ✅ | `eoqual.measure.radiometry.measure_dark_current` | Courant par pixel, DSNU du courant, pixels chauds, gain poissonnien, loi en température | Régression masquée par pixel, loi T³·exp(−E_g/2kT) |
 | `temporal_noise` | ✅ | `eoqual.measure.radiometry.measure_temporal_noise` | Variance temporelle, signal corrigé de l'obscurité | Différence de paire ou variance de pile |
@@ -163,7 +166,8 @@ src/eoqual/measure/
 │   └── slanted_edge/    preprocess, orientation/, estimators/, bootstrap,
 │                        chromatic, sensitivity, visualization, cli
 ├── noise/               estimate_noise(), NoiseEstimate, NoiseVariance ;
-│                        noise_power_spectrum(), find_structured_noise()
+│                        noise_power_spectrum(), find_structured_noise() ;
+│                        variogram_noise(), variogram()
 ├── radiometry/          obscurité, courant d'obscurité, bruit temporel, PTC,
 │                        PRNU, linéarité, défauts, RTS, convertisseur,
 │                        push broom, SNR, bruit spatial et d'égalisation

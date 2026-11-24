@@ -40,6 +40,15 @@ MEASURES_CONFIGS: OrderedDict = OrderedDict(
             "builds_on": [],
             "reference": "Ponomarenko et al. (2007), IGARSS ; Colom & Buades (2013), IPOL 3, 173-197",
         },
+        "variogram_noise": {
+            "family": "noise",
+            "status": "available",
+            "input": "Image 2D brute d'une scène peu texturée à l'échelle du pixel (bruit blanc)",
+            "outputs": "Variance du bruit par la pépite du variogramme, SNR, modèle a + b·μ, anisotropie, fraction de pépite (fiabilité)",
+            "entry": "eoqual.measure.noise:variogram_noise",
+            "builds_on": [],
+            "reference": "Curran & Dungan (1989), IEEE TGRS 27(5), 620-628 ; Matheron (1963), Economic Geology 58(8), 1246-1266",
+        },
         "dark_frame": {
             "family": "radiometry",
             "status": "available",

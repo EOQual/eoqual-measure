@@ -19,6 +19,8 @@ TOLERANCES = {
     "flat_patches": 0.35,
     "adaptive_segmentation": 0.25,
     "pca_estimate": 0.35,
+    # 5 u, avec u(σ²) = 0,33 DN² sur cette image (128 tuiles de 16 pixels retenues).
+    "variogram": 0.065,
 }
 
 

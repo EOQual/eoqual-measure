@@ -40,6 +40,7 @@ class NoiseVariance:
         'ponomarenko',
         'adaptive_segmentation',
         'pca_estimate',
+        'variogram',
     ]
 
     # Définition des paramètres requis pour chaque méthode de mesure
@@ -82,6 +83,12 @@ class NoiseVariance:
             'n_bootstrap': "int (nombre de ré-échantillonnages bootstrap intra-image pour la dispersion, défaut : 20)",
             'bootstrap_seed': "int (graine du tirage aléatoire du bootstrap, défaut : 1)",
         },
+        'variogram': {
+            'tile': "int (côté des tuiles en pixels, défaut : 16)",
+            'keep_fraction': "float (fraction des tuiles les plus lisses retenues, défaut : 0.5)",
+            'model': "str ('linear' : 2γ(1) − γ(2), ou 'quadratic' : 3γ(1) − 3γ(2) + γ(3), défaut : 'linear')",
+            'saturation': "float ou None (tuiles contenant un pixel ≥ ce niveau exclues, défaut : None)",
+        },
     }
 
     def __init__(self, image: Optional[NDArray] = None):
@@ -98,6 +105,7 @@ class NoiseVariance:
             'ponomarenko': self._estimate_noise_ponomarenko,
             'adaptive_segmentation': self._estimate_noise_var_segmentation,
             'pca_estimate': self._estimate_noise_var_pca,
+            'variogram': self._estimate_noise_var_variogram,
         }
 
 ## ----------------------------------------------------------------------
@@ -789,6 +797,29 @@ class NoiseVariance:
 
         return (sigma2, mean_signal, samples, luminance_samples)
 
+    def _estimate_noise_var_variogram(
+        self, image: NDArray[np.float32], params: Optional[dict]
+    ) -> Tuple[float, float, NDArray[np.float64], NDArray[np.float64]]:
+        """
+        Estime la variance du bruit par la pépite du variogramme (voir
+        :func:`eoqual.measure.noise.variogram.variogram_noise` et
+        REFERENCE_TECHNIQUE.md, partie IV, chapitre 14).
+
+        Returns
+        -------
+        Tuple[float, float, NDArray[np.float64], NDArray[np.float64]]
+            Pépite moyenne, luminance moyenne des tuiles retenues, pépite de
+            chaque tuile et luminance de chaque tuile (même ordre) : la
+            courbe bruit-luminance se construit comme pour les autres
+            méthodes.
+        """
+        from eoqual.measure.noise.variogram import variogram_noise
+
+        allowed = {'tile', 'keep_fraction', 'model', 'saturation'}
+        kwargs = {k: v for k, v in (params or {}).items() if k in allowed}
+        r = variogram_noise(image, **kwargs)
+        return (r.variance, r.mean, r.tile_variance, r.tile_mean)
+
 ## ----------------------------------------------------------------------
 # Méthode Publique d'Application d'un estimateur
 # -----------------------------------------------------------------------
@@ -810,7 +841,7 @@ class NoiseVariance:
         ----------
         image : NDArray[np.float32]
             L'image 2D d'entrée (H, W).
-        estimator : {'flat_patches', 'wavelets', 'skimage_estimate_sigma', 'ponomarenko', 'adaptive_segmentation', 'pca_estimate'}
+        estimator : {'flat_patches', 'wavelets', 'skimage_estimate_sigma', 'ponomarenko', 'adaptive_segmentation', 'pca_estimate', 'variogram'}
             Méthode d'estimation à appliquer.
         params : dict ou None
             Dictionnaire des paramètres requis pour la méthode choisie.

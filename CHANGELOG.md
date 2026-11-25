@@ -2,7 +2,7 @@
 
 ## Version History
 
-Non publié
+0.5.0 (2026-11-25)
 
 :   -   Document du variogramme découpé par thème dans
         `docs/technique/bruit-variogramme/` ; les chapitres gardent leur
